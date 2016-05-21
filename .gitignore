@@ -35,3 +35,5 @@ typings
 
 # Build folder where tsc outputs will be created
 build
+
+.vscode/settings.json
