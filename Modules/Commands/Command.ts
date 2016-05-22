@@ -1,11 +1,11 @@
-import CommandFactory = require("./CommandFactory");
+import Commands = require("./CommandFactory");
 
 /**
  * Command
  * Abstract class for all types of commands
 */
 abstract class Command {
-    constructor() {
+    constructor(public payload : Commands.CommandPayload) {
         
     }
     
@@ -14,7 +14,7 @@ abstract class Command {
     /** 
      * Handle the command
     */
-    abstract handle () : boolean;
+    abstract handle () : Commands.CommandResponse;
     
     static canHandle (command : string) : boolean {
         return command.trim().toUpperCase() === this.command;

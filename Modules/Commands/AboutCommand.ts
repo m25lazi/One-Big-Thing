@@ -2,21 +2,21 @@ import Command = require("./Command");
 import Commands = require("./CommandFactory");
 
 /**
- * HelpCommand
- * Handles /Help
+ * AboutCommand
+ * Handles /About
  */
-class HelpCommand extends Command {
+class AboutCommand extends Command {
     
-    static command = "/HELP"
+    static command = "/ABOUT"
     
     constructor(commandPayload : Commands.CommandPayload) {
         super(commandPayload)
     }
     
     public handle () :  Commands.CommandResponse{
-        console.log("Handling /HELP")
-        return {message : "More commands - /about"}
+        console.log("Handling /ABOUT")
+        return {message : "One Big Thing (v 0.1.20160522.pre-alpha) "}
     }
 }
 
-export = HelpCommand
+export = AboutCommand
