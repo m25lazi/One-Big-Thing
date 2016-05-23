@@ -13,9 +13,9 @@ class HelpCommand extends Command {
         super(commandPayload)
     }
     
-    public handle () :  Commands.CommandResponse{
+    public handle (callback : Commands.CommandHandler){
         console.log("Handling /HELP")
-        return {message : "More commands - /about"}
+        callback( {message : "More commands - /about"} )
     }
 }
 

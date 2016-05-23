@@ -14,7 +14,7 @@ abstract class Command {
     /** 
      * Handle the command
     */
-    abstract handle () : Commands.CommandResponse;
+    abstract handle (callback : Commands.CommandHandler) : void;
     
     static canHandle (command : string) : boolean {
         return command.trim().toUpperCase() === this.command;

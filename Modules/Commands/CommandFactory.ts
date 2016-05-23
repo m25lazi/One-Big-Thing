@@ -1,13 +1,20 @@
 import Command = require("./Command");
 import Help = require("./HelpCommand");
 import About = require("./AboutCommand");
+import Create = require("./CreateCommand");
+import Today = require("./TodayCommand");
 
-export {Command, Help, About} 
+
+export {Command, Help, About, Create, Today} 
 
 export interface CommandPayload {
     command : string,
     message? : string,
     sender? : string
+}
+
+export interface CommandHandler {
+    (response : CommandResponse) : void
 }
 
 export interface CommandResponse {
@@ -27,6 +34,12 @@ export class CommandFactory {
         }
         else if(About.canHandle(payload.command)) {
             return new About(payload);
+        }
+        else if(Create.canHandle(payload.command)) {
+            return new Create(payload);
+        }
+        else if(Today.canHandle(payload.command)) {
+            return new Today(payload);
         }
         
         return null;

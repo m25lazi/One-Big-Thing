@@ -1,9 +1,10 @@
 {
   "name": "one-big-thing",
   "version": "0.0.1",
-  "description": "",
+  "description": "Facebook Messenger bot that keeps track of the big thing everyday",
   "main": "index.js",
   "scripts": {
+    "start": "node build/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -12,8 +13,13 @@
   "author": "m25lazi",
   "license": "MIT",
   "dependencies": {
+    "body-parser": "^1.15.1",
     "express": "^4.13.4",
+    "firebase": "2.0.2",
+    "retyped-body-parser-tsd-ambient": "0.0.0-0",
+    "retyped-firebase-tsd-ambient": "^2.0.2-0",
     "typescript": "^1.8.10",
     "typings": "^0.8.1"
-  }
+  },
+  "devDependencies": {}
 }

@@ -13,9 +13,9 @@ class AboutCommand extends Command {
         super(commandPayload)
     }
     
-    public handle () :  Commands.CommandResponse{
+    public handle (callback : Commands.CommandHandler){
         console.log("Handling /ABOUT")
-        return {message : "One Big Thing (v 0.1.20160522.pre-alpha) "}
+        callback({message : "One Big Thing (v 0.1.20160523.pre-alpha) "})
     }
 }
 
