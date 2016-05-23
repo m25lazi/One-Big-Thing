@@ -14,7 +14,8 @@ class Item {
     date : string; //YYYYMMDD format
     created : number;
     updated : number;
-    private primary : string // now : user+date / change to date+user
+    done : boolean;
+    private primary : string; 
     constructor (public user : string, public text : string) {
         
     }
@@ -24,7 +25,8 @@ class Item {
         item.date = Item.getToday()
         if(item.canCreate()){
             item.created = Math.round(new Date().getTime()/1000)
-            item.primary = item.user+item.date
+            item.primary = item.date+item.user
+            item.done = false
             item.itemId = Database.sharedDatabase().push("items", item)
             return callback (true, item)
         }
@@ -35,7 +37,7 @@ class Item {
     static fetch(user : string, day : number, callback :  ItemHandler) {
         var date =  parseInt(this.getToday(), 10)
         date +=day
-        Database.sharedDatabase().findEqual("items", "primary", user+date, (data, error) => {
+        Database.sharedDatabase().findEqual("items", "primary", date+user, (data, error) => {
             if(error){
                 throw "ERROR FROM DB"
             }
@@ -49,6 +51,7 @@ class Item {
                         item.date = fetched.date
                         item.created = fetched.created
                         item.updated = fetched.updated
+                        item.done = fetched.done
                         item.itemId = key
                         callback(true, item)
                     }
@@ -60,9 +63,6 @@ class Item {
                     callback(true, null)
                 }
                 
-                
-                
-           
             }
         })
     }

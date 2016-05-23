@@ -19,10 +19,18 @@ class CreateCommand extends Command {
         
         Item.fetch(this.payload.sender, 0, (success, item) => {
             if(success){
-                callback( {message : item.text} );
+                if(item){
+                    var message = item.text
+                    if(item.done)
+                        message += " (Done)" 
+                    callback({message : message});
+                }
+                else{
+                    callback({message : "Not created yet! use /create command to create new item"});
+                }
             }
             else{
-                callback( {message : "Some Error. :()"} );
+                callback({message : "Some Error. :()"});
             }
         })
         

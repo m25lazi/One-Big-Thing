@@ -15,7 +15,7 @@ class AboutCommand extends Command {
     
     public handle (callback : Commands.CommandHandler){
         console.log("Handling /ABOUT")
-        callback({message : "One Big Thing (v 0.1.20160523.pre-alpha) "})
+        callback({message : "One Big Thing (v 0.1.20160524.pre-alpha) "})
     }
 }
 
