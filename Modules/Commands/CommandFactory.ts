@@ -3,9 +3,11 @@ import Help = require("./HelpCommand");
 import About = require("./AboutCommand");
 import Create = require("./CreateCommand");
 import Today = require("./TodayCommand");
+import Update = require("./UpdateCommand");
+import Done = require("./DoneCommand");
 
 
-export {Command, Help, About, Create, Today} 
+export {Command, Help, About, Create, Today, Update, Done} 
 
 export interface CommandPayload {
     command : string,
@@ -40,6 +42,12 @@ export class CommandFactory {
         }
         else if(Today.canHandle(payload.command)) {
             return new Today(payload);
+        }
+        else if(Update.canHandle(payload.command)) {
+            return new Update(payload);
+        }
+        else if(Done.canHandle(payload.command)) {
+            return new Done(payload);
         }
         
         return null;

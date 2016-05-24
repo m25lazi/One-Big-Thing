@@ -21,17 +21,68 @@ class Item {
     }
     
     static add(user : string, text : string, callback :  ItemHandler) {
-        var item = new Item(user, text)
-        item.date = Item.getToday()
-        if(item.canCreate()){
-            item.created = Math.round(new Date().getTime()/1000)
-            item.primary = item.date+item.user
-            item.done = false
-            item.itemId = Database.sharedDatabase().push("items", item)
-            return callback (true, item)
-        }
         
-        return callback (false, null)   
+        this.fetch(user, 0, (success, item)=>{
+            if(item){
+                /* Already there! throw for now */
+                throw "CREATE?? ALREADY THERE!"
+            }
+            else{
+                var item = new Item(user, text)
+                item.date = Item.getToday()
+                if (item.canCreate()) {
+                    item.created = Math.round(new Date().getTime() / 1000)
+                    item.primary = item.date + item.user
+                    item.done = false
+                    item.itemId = Database.sharedDatabase().push("items", item)
+                    return callback(true, item)
+                }
+            }
+        })
+    }
+    
+    static update(user : string, text : string, callback :  ItemHandler) {
+        
+        this.fetch(user, 0, (success, item)=>{
+            if(!item){
+                /* Create new one! But throw for now */
+                throw "UPDATE BUT NOTHING THERE!"
+            }
+            else if (item.done){
+                /* Already completed! */
+                throw "TRYING TO UPDATE COMPLETED ITEM!"
+            }
+            else{
+                item.text = text
+                item.updated = Math.round(new Date().getTime()/1000)
+                Database.sharedDatabase().update("items/"+item.itemId, {
+                    text : item.text,
+                    updated : item.updated
+                })
+                callback (true, item)
+            }
+        }) 
+    }
+    
+    static markDone(user : string, callback :  ItemHandler) {
+        
+        this.fetch(user, 0, (success, item)=>{
+            if(!item){
+                /* Nothing there to mark as complete! */
+                throw "DONE??? BUT NOTHING THERE!"
+            }
+            else if (item.done){
+                /* Already completed! */
+                throw "DONE ON COMPLETED ITEM!"
+            }
+            else{
+                item.done = true
+                Database.sharedDatabase().update("items/"+item.itemId, {
+                    done : true,
+                })
+                callback (true, item)
+            }
+        }) 
     }
     
     static fetch(user : string, day : number, callback :  ItemHandler) {
