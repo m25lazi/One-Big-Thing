@@ -124,7 +124,7 @@ app.post('/message', (request, response)=>{
     
 })
 
-function handle(text:string, sender:string, callback:(reply:string)=>void) {
+function handle(text:string, sender:string, callback:(reply:any)=>void) {
     if(text.trim().charAt(0) === '/'){
         console.log("Commaaaaand!!!!")
         var cmnd = text.trim().split(" ")[0]
@@ -138,7 +138,7 @@ function handle(text:string, sender:string, callback:(reply:string)=>void) {
         }
         cmd.handle( (cmdResponse) => {
             console.log(cmdResponse)
-            callback(JSON.stringify(cmdResponse))
+            callback(cmdResponse.message)
         })
         
     }
