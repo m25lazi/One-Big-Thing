@@ -49,22 +49,32 @@ app.post('/webhook/', function (req, res) {
                 var text = event.message.text;
                 
                 
-                
-                
-                var messageData = {
-                    text: text
-                }
-                request({
-                    url: 'https://graph.facebook.com/v2.6/me/messages',
-                    qs: { access_token: token },
-                    method: 'POST',
-                    json: {
-                        recipient: { id: sender },
-                        message: messageData,
+                handle(text, sender, (reply)=>{
+                    var messageData : any = null
+                    if(reply){
+                        messageData = {
+                            text : reply
+                        }
                     }
-                }, function (error, response, body) {
-                    /* ERROR HANDLING */
-                });
+                    else{
+                        messageData = {
+                            text : "Unknown command. Use /help for more info."
+                        }
+                    }
+                    request({
+                        url: 'https://graph.facebook.com/v2.6/me/messages',
+                        qs: { access_token: token },
+                        method: 'POST',
+                        json: {
+                            recipient: { id: sender },
+                            message: messageData,
+                        }
+                    }, function (error, response, body) {
+                        /* ERROR HANDLING */
+                    });
+                })
+                
+                
                 
             }
             else if(event.postback && event.postback.payload){
