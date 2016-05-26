@@ -19,7 +19,6 @@
     "request": "^2.72.0",
     "retyped-body-parser-tsd-ambient": "0.0.0-0",
     "retyped-firebase-tsd-ambient": "^2.0.2-0",
-    "retyped-request-tsd-ambient": "0.0.0-0",
     "typescript": "^1.8.10",
     "typings": "^0.8.1"
   },

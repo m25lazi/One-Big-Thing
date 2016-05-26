@@ -1,12 +1,13 @@
 ///<reference path="typings/main.d.ts" />
 ///<reference path="node_modules/retyped-firebase-tsd-ambient/firebase.d.ts" />
 ///<reference path="node_modules/retyped-body-parser-tsd-ambient/body-parser.d.ts" />
-///<reference path="node_modules/retyped-request-tsd-ambient/request.d.ts" />
+/////<reference path="node_modules/retyped-request-tsd-ambient/request.d.ts" />
 
 
 import express = require("express");
 import bodyParser = require('body-parser');
-import request = require('request');
+// import request = require('request');
+var request = require('request'); //TODO: JS??? Port to TypeScript!!!
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -69,9 +70,7 @@ app.post('/webhook/', function (req, res) {
                             recipient: { id: sender },
                             message: messageData,
                         }
-                    }, function (error, response, body) {
-                        /* ERROR HANDLING */
-                    });
+                    });//TODO:Error Handling???
                 })
                 
                 
@@ -125,7 +124,7 @@ app.post('/message', (request, response)=>{
     
 })
 
-function handle(text:string, user:string, callback:(reply:string)=>void) {
+function handle(text:string, sender:string, callback:(reply:string)=>void) {
     if(text.trim().charAt(0) === '/'){
         console.log("Commaaaaand!!!!")
         var cmnd = text.trim().split(" ")[0]
