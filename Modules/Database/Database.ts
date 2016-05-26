@@ -24,7 +24,7 @@ class Database {
     }
     
     static sharedDatabase () {
-        var firebaseURL : string 
+        var firebaseURL : string = process.env.FIREBASE_URL
         if(!firebaseURL || firebaseURL.trim() === "")
             throw "SET FIREBASE URL"
         return  new Database(new Firebase(firebaseURL));
