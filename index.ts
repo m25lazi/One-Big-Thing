@@ -91,7 +91,11 @@ app.post('/webhook/', function (req, res) {
 
 
 app.get('/health', (request, response)=>{
-    response.end("Typescript Express Server : "+new Date().toString())
+    let gmtDate = Math.round(new Date().getTime())
+    let istDate = gmtDate + ((5*60+30)*60*1000)
+        
+    let date = new Date (istDate)
+    response.end("Typescript Express Server : "+date.toString())
 })
 
 app.post('/message', (request, response)=>{

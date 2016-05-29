@@ -125,7 +125,10 @@ class Item {
     
     private static getToday () : string {
         //TODO: Timezone???
-        let date = new Date ()
+        let gmtDate = Math.round(new Date().getTime())
+        let istDate = gmtDate + ((5*60+30)*60*1000)
+        
+        let date = new Date (istDate)
         
         var year = date.getFullYear().toString();
         var month = (date.getMonth() + 1).toString();
