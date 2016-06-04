@@ -23,6 +23,12 @@ class Database {
         })
     }
     
+    public findStartAt (node : string, orderByChild: string, value : string, callback : DatabaseHandler){
+        this.db.ref().child(node).orderByChild(orderByChild).startAt(value).once('value', (snapshot)=>{
+            callback(snapshot.val(), null)
+        })
+    }
+    
     static sharedDatabase () {
         var firebaseURL : string = process.env.FIREBASE_URL
         if(!firebaseURL || firebaseURL.trim() === "")

@@ -4,9 +4,14 @@
  */
 
 import Database = require("../Database/Database")
+import Today = require("../Extensions/Today")
 
 interface ItemHandler {
     (success : boolean, item : Item) : void
+}
+
+interface StreakHandler {
+    (success : boolean, streak : boolean[]) : void
 }
 
 class Item {
@@ -29,7 +34,7 @@ class Item {
             }
             else{
                 var item = new Item(user, text)
-                item.date = Item.getToday()
+                item.date = new Today().toString()
                 if (item.canCreate()) {
                     item.created = Math.round(new Date().getTime() / 1000)
                     item.primary = item.date + item.user
@@ -86,8 +91,9 @@ class Item {
     }
     
     static fetch(user : string, day : number, callback :  ItemHandler) {
-        var date =  parseInt(this.getToday(), 10)
-        date +=day
+        var date =  new Today().toNumber()
+        date +=day //TODO: this wont work!!! 
+        
         Database.sharedDatabase().findEqual("items", "primary", date+user, (data, error) => {
             if(error){
                 throw "ERROR FROM DB"
@@ -118,22 +124,50 @@ class Item {
         })
     }
     
+    static streak(user : string, day : number, callback : StreakHandler) {
+        var date =  new Today(-1*day)
+        
+        Database.sharedDatabase().findEqual("items", "user", user, (data, error) => {
+            if(error){
+                throw "ERROR FROM DB"
+            }
+            else {
+                
+                var streak : boolean[] = new Array(day)
+                for (var index = 0; index < streak.length; index++) {
+                    streak[index] = false
+                }
+                console.log(streak)
+                
+                if (data) {
+                    let keys = Object.keys(data)
+                    keys.forEach(itemid => {
+                        /* Will get all elements of the user! TODO: Better way to do this? */
+                        let fetchedItem = data[itemid]
+                        let fetchedItemDate = parseInt(fetchedItem.date, 10)
+                        let today = new Today()
+                        let index =  Today.fromNumber(fetchedItemDate).daysTo(today)
+                        if(index == 0 || index > day){
+                            //Today or Older item : Leave item
+                        }
+                        else{
+                            streak[index-1] = fetchedItem.done
+                        }
+                    });
+                    callback(true, streak)
+                }
+                else{
+                    /* Nothing created in this time period */
+                    callback(true, streak)
+                }
+                
+            }
+        })
+    }
+    
     private canCreate() : boolean{
         /* Check whether any entry is there for today */
         return true;
-    }
-    
-    private static getToday () : string {
-        //TODO: Timezone???
-        let gmtDate = Math.round(new Date().getTime())
-        let istDate = gmtDate + ((5*60+30)*60*1000)
-        
-        let date = new Date (istDate)
-        
-        var year = date.getFullYear().toString();
-        var month = (date.getMonth() + 1).toString();
-        var dateOfMonth = date.getDate().toString();
-        return year + (month[1] ? month : "0" + month[0]) + (dateOfMonth[1] ? dateOfMonth : "0" + dateOfMonth[0]); 
     }
     
 }

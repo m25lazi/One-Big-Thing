@@ -5,24 +5,29 @@
  */
 class Today {
     static timezoneCorrection : number = 0//((5*60+30)*60*1000)
-    
+    /**
+     * Only year, month, date component will be correct
+     * Time component will be zero
+     */
     private date : Date
     
     constructor(days : number = 0) {
         let currentTime = Math.round(new Date().getTime())
         currentTime += Today.timezoneCorrection
         currentTime += days*24*60*60*1000
-        this.date = new Date(currentTime)
+        let date = new Date(currentTime)
+        date.setHours(0, 0, 0, 0)
+        this.date = date
     }
     
-    toDate = function () : Date {
+     public toDate () : Date {
         return this.date;
     }
     
     /** 
      * Returns YYYYMMDD representation of date in number
     */
-    toNumber = function () : number {
+     public toNumber () : number {
         let year = this.date.getFullYear().toString();
         let month = (this.date.getMonth() + 1).toString();
         let dateOfMonth = this.date.getDate().toString();
@@ -32,12 +37,17 @@ class Today {
         return parseInt(today, 10); 
     }
     
+    public toString () : string {
+        return this.toNumber().toString();
+    }
+    
     /** 
      * Returns Difference in days between two dates basically (Can be zero or negative)
      * (argument - this)
     */
-    daysTo = function (today:Today) {
+     public daysTo (today:Today) {
         let timeDiff = today.date.getTime() - this.date.getTime();
+        
         let differenceInDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
         return  differenceInDays;
     }
@@ -45,7 +55,7 @@ class Today {
     /** 
      * Returns Today Object from YYYYMMDD representation of date in number
     */
-    static fromNumber = function (num : number) : Today {
+    static fromNumber (num : number) : Today {
         let dateOfMonth = num % 100
         if(dateOfMonth <= 0 || dateOfMonth > 31)
             throw "Today - Invalid Month"
@@ -60,7 +70,7 @@ class Today {
             throw "Today - Invalid Year"
         
         let today = new Today()
-        today.date = new Date(year, month, dateOfMonth);
+        today.date = new Date(year, month-1, dateOfMonth);
 
         return today
     }

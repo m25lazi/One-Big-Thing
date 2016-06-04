@@ -5,9 +5,10 @@ import Create = require("./CreateCommand");
 import Today = require("./TodayCommand");
 import Update = require("./UpdateCommand");
 import Done = require("./DoneCommand");
+import Streak = require("./StreakCommand");
 
 
-export {Command, Help, About, Create, Today, Update, Done} 
+export {Command, Help, About, Create, Today, Update, Done, Streak} 
 
 export interface CommandPayload {
     command : string,
@@ -48,6 +49,9 @@ export class CommandFactory {
         }
         else if(Done.canHandle(payload.command)) {
             return new Done(payload);
+        }
+        else if(Streak.canHandle(payload.command)) {
+            return new Streak(payload);
         }
         
         return null;
