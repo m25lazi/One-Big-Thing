@@ -4,7 +4,7 @@
  * Date wrapper to get/set YYYYMMDD respresentation of the day
  */
 class Today {
-    static timezoneCorrection : number = 0//((5*60+30)*60*1000)
+    static timezoneCorrection : number = ((5*60+30)*60*1000)
     /**
      * Only year, month, date component will be correct
      * Time component will be zero
