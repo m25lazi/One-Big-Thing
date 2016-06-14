@@ -20,6 +20,7 @@ let token = process.env.MESSENGER_PAGE_ACCESS_TOKEN;
 /* Custom Modules */
 import Commands = require("./Modules/Commands/CommandFactory")
 import Item = require("./Modules/Models/Item")
+import User = require("./Modules/Models/User")
 
 
 /* Start app */
@@ -41,6 +42,12 @@ app.get('/webhook/', (req, res) => {
 app.post('/webhook/', function (req, res) {
     console.log('POST /webhook');
     console.log(JSON.stringify(req.body.entry))
+    res.sendStatus(200);
+    /**
+     * TODO : take care about the mid - req.body.entry[0].messaging[0].mid
+     * Issue : while server is in idle state, we are getting message 2 times. Two actions are carried out for the same request!!!
+     * [{"id":"564364760261430","time":1465022418376,"messaging":[{"sender":{"id":"835579686547079"},"recipient":{"id":"564364760261430"},"timestamp":1465022403753,"message":{"mid":"mid.1465022403746:63d1e44a541ba7c892","seq":469,"text":"/about"}}]}]
+     */
     var messaging_events = req.body.entry[0].messaging;
     if(messaging_events){
         for (var i = 0; i < messaging_events.length; i++) {
@@ -49,6 +56,12 @@ app.post('/webhook/', function (req, res) {
             if (event.message && event.message.text) {
                 var text = event.message.text;
                 
+                /*
+                    Fetch user details async'ly. Not using any data, so just save ot for future ref 
+                */
+                User.fetch(sender, (success, user)=>{
+                    
+                })
                 
                 handle(text, sender, (reply)=>{
                     var messageData : any = null
@@ -84,8 +97,6 @@ app.post('/webhook/', function (req, res) {
     else{
         console.log("NO MSG EVENTS")
     }
-  
-  res.sendStatus(200);
 });
 
 
@@ -150,3 +161,17 @@ function handle(text:string, sender:string, callback:(reply:any)=>void) {
         callback(null)
     }
 }
+
+
+/**
+ * TODO: Get Profile
+ * https://graph.facebook.com/v2.6/<USER_ID>?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=<PAGE_ACCESS_TOKEN>
+ {
+   "first_name": "Lazim",
+   "last_name": "Mohammed",
+   "profile_pic": "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpt1/v/t1.0-1/p200x200/10606488_916735125009225_5475037962770384238_n.jpg?oh=67d84aa123abf7273709cabe76b352e1&oe=57D9FF72&__gda__=1477010447_c8fc8182c65a0f011322e3a34aa3c6f9",
+   "locale": "en_IN",
+   "timezone": 5.5,
+   "gender": "male"
+}
+ */
