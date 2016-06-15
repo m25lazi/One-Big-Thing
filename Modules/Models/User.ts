@@ -56,7 +56,7 @@ export = class User {
         user.name = data.name
         user.gender = data.gender
         user.timezone = data.timezone
-        return null
+        return user
     }
     
     /**
