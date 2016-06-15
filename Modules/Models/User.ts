@@ -67,7 +67,7 @@ export = class User {
     static fetch(id : string, callback : (success : boolean, user : User) => void){
         User.fetchFromDB(id, (success, user)=> {
             if(success){
-                if (name && name.trim()!="") {
+                if (user) {
                     console.log("User details fetched from DB")
                     callback(true, user)
                 }

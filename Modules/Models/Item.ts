@@ -137,7 +137,6 @@ class Item {
                 for (var index = 0; index < streak.length; index++) {
                     streak[index] = false
                 }
-                console.log(streak)
                 
                 if (data) {
                     let keys = Object.keys(data)
