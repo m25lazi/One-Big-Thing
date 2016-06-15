@@ -117,6 +117,8 @@ app.post('/message', (request, response)=>{
     let sender : string = request.body.sender;
     if(text.trim().charAt(0) === '/'){
         console.log("Commaaaaand!!!!")
+        User.fetch(sender, (success, user)=>{
+        })
         var cmnd = text.trim().split(" ")[0]
         console.log(cmnd);
         
