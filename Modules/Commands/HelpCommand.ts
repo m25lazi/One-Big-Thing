@@ -15,7 +15,7 @@ class HelpCommand extends Command {
     
     public handle (callback : Commands.CommandHandler){
         console.log("Handling /HELP")
-        callback( {message : "More commands - /about, /create, /done, /help, /today, /update"} )
+        callback( {message : "More commands - /about, /create, /done, /help, /today, /update, /streak"} )
     }
 }
 
