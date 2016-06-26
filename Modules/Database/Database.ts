@@ -28,6 +28,12 @@ class Database {
             callback(snapshot.val(), null)
         })
     }
+
+    public getAll (node: string, callback: DatabaseHandler){
+        this.db.ref().child(node).once('value', (snapshot)=>{
+            callback(snapshot.val(), null)
+        })
+    }
     
     static sharedDatabase () {
         var firebaseURL : string = process.env.FIREBASE_URL

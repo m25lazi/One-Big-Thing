@@ -92,6 +92,34 @@ export = class User {
         })
     }
 
+    /**
+     * getAllUsers 
+     * Fetches all user's id from DB
+     * TODO : Need some other technique!!! This fetches whole user data, and take ids, which is too expensive!
+     */
+    static getAllUsers (callback : (success: boolean, userids: Array<string>) => void){
+        Database.sharedDatabase().getAll("users", (data, error)=> {
+            if(error) {
+                callback(false, null)
+            }
+            else {
+                if(data) {
+                    let keys = Object.keys(data)
+                    let userids: Array<string> = [];
+                    keys.forEach(function (key: string) {
+                        let fetched = data[key]
+                        userids.push(fetched.id);
+                    })
+                    callback(true, userids)
+                }
+                else{
+                    callback(true, null)
+                }
+
+            }
+        })
+    }
+
     private static fetchFromDB (id : string, callback : (success : boolean, user : User) => void){
         Database.sharedDatabase().findEqual("users", "id", id, (data, error) => {
 
