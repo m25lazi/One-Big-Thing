@@ -39,6 +39,7 @@ app.get('/webhook/', (req, res) => {
     res.send('Error, wrong validation token');
 })
 
+let handledMessages : any = {} 
 app.post('/webhook/', function (req, res) {
     console.log('POST /webhook');
     console.log(JSON.stringify(req.body.entry))
@@ -54,6 +55,25 @@ app.post('/webhook/', function (req, res) {
             var event = req.body.entry[0].messaging[i];
             var sender = event.sender.id;
             if (event.message && event.message.text) {
+                var messageId = event.mid;
+                if(handledMessages[messageId] === true){
+                    console.log("Message already handled");
+                    var messageData = {
+                        text: "DEBUG : Message already handled"
+                    }
+                    request({
+                        url: 'https://graph.facebook.com/v2.6/me/messages',
+                        qs: { access_token: token },
+                        method: 'POST',
+                        json: {
+                            recipient: { id: sender },
+                            message: messageData,
+                        }
+                    });
+                    return;
+                }
+
+                handledMessages[messageId] = true;
                 var text = event.message.text;
                 
                 /*
