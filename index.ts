@@ -55,11 +55,11 @@ app.post('/webhook/', function (req, res) {
             var event = req.body.entry[0].messaging[i];
             var sender = event.sender.id;
             if (event.message && event.message.text) {
-                var messageId = event.mid;
+                var messageId = event.message.mid;
                 if(handledMessages[messageId] === true){
                     console.log("Message already handled");
                     var messageData = {
-                        text: "DEBUG : Message already handled"
+                        text: "DEBUG\nMessage already handled\n Current id : "+messageId+"\n handledMessages : "+JSON.stringify(handledMessages)
                     }
                     request({
                         url: 'https://graph.facebook.com/v2.6/me/messages',
