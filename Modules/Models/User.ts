@@ -148,7 +148,7 @@ export = class User {
     }
     
     private static saveUsingGraphAPI (id : string, callback : (success : boolean, user : User) => void){
-        Request.get("https://graph.facebook.com/v2.6/835579686547079", {
+        Request.get("https://graph.facebook.com/v2.6/"+id, {
         fields : "first_name,last_name,profile_pic,locale,timezone,gender",
         access_token : process.env.MESSENGER_PAGE_ACCESS_TOKEN
     }, (error, response, body)=>{
