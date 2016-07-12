@@ -22,7 +22,7 @@ class CreateCommand extends Command {
                 callback( {message : "Completed!!! :)"} );
             }
             else{
-                callback( {message : "Some Error. :()"} );
+                callback( {message : "Error : Either you have not created a task or is marked done."} );
             }
         })
         

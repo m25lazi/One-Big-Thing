@@ -30,7 +30,7 @@ class Item {
         this.fetch(user, 0, (success, item)=>{
             if(item){
                 /* Already there! throw for now */
-                throw "CREATE?? ALREADY THERE!"
+                return callback(false, null)
             }
             else{
                 var item = new Item(user, text)
@@ -50,12 +50,11 @@ class Item {
         
         this.fetch(user, 0, (success, item)=>{
             if(!item){
-                /* Create new one! But throw for now */
-                throw "UPDATE BUT NOTHING THERE!"
+                callback (false, null)
             }
             else if (item.done){
                 /* Already completed! */
-                throw "TRYING TO UPDATE COMPLETED ITEM!"
+                callback (false, null)
             }
             else{
                 item.text = text
@@ -74,11 +73,11 @@ class Item {
         this.fetch(user, 0, (success, item)=>{
             if(!item){
                 /* Nothing there to mark as complete! */
-                throw "DONE??? BUT NOTHING THERE!"
+                callback (false, null)
             }
             else if (item.done){
                 /* Already completed! */
-                throw "DONE ON COMPLETED ITEM!"
+                callback (false, null)
             }
             else{
                 item.done = true

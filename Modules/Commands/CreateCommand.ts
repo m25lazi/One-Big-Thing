@@ -24,7 +24,7 @@ class CreateCommand extends Command {
                 callback( {message : "Created!!! :)"} );
             }
             else{
-                callback( {message : "Some Error. :()"} );
+                callback( {message : "Error : You have already created a task for today"} );
             }
         })
         

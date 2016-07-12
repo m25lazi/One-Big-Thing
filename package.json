@@ -1,6 +1,6 @@
 {
   "name": "one-big-thing",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Facebook Messenger bot that keeps track of the big thing everyday",
   "main": "index.js",
   "scripts": {

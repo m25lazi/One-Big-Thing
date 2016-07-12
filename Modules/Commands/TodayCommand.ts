@@ -30,7 +30,7 @@ class CreateCommand extends Command {
                 }
             }
             else{
-                callback({message : "Some Error. :()"});
+                callback({message : "Some Error"});
             }
         })
         
