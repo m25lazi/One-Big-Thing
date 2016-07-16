@@ -40,6 +40,7 @@ app.get('/webhook/', (req, res) => {
 })
 
 let handledMessages : any = {} 
+let onboarding : any = {}
 app.post('/webhook/', function (req, res) {
     console.log('POST /webhook');
     console.log(JSON.stringify(req.body.entry))
@@ -75,6 +76,9 @@ app.post('/webhook/', function (req, res) {
 
                 handledMessages[messageId] = true;
                 var text = event.message.text;
+                var quickReplyPayload : string = null;
+                if(event["message"]["quick_reply"] && event["message"]["quick_reply"]["payload"])
+                    quickReplyPayload = event["message"]["quick_reply"]["payload"]
                 
                 /*
                     Fetch user details async'ly. Not using any data, so just save ot for future ref 
@@ -82,6 +86,144 @@ app.post('/webhook/', function (req, res) {
                 User.fetch(sender, (success, user)=>{
                     
                 })
+
+                if(onboarding[sender] && onboarding[sender]["started"] == true){
+                    if(quickReplyPayload){
+                        if(quickReplyPayload === "ONBOARDING_IGNORE_TUTORIALS"){
+                            let messageData = {
+                                "text": "Fine :) One note - You can invoke me using commands. Type /help anytime to get list of commands.",
+                                "quick_replies": [
+                                    {
+                                        "content_type": "text",
+                                        "title": "👍🏻",
+                                        "payload": "ONBOARDING_STOP"
+                                    }
+                                ]
+                            }
+                            sendMessage(sender, messageData)
+                            onboarding[sender]["context"] = "DONE"
+                            return
+                        }
+                        else if(quickReplyPayload === "ONBOARDING_START_TUTORIALS"){
+                            let messageData = {
+                                "text": "Let's get started. Everyday, you can create a task, that one important task for the day. Use /create command for this. Example : '/create Complete watching Android animations basic course videos'. Give it a try"
+                            }
+
+                            sendMessage(sender, messageData)
+                            onboarding[sender]["context"] = "WAITING_CREATE_TASK"
+                            return
+                        }
+                        else if(quickReplyPayload ==="ONBOARDING_STOP"){
+                            onboarding[sender] = null
+                            return
+                        }
+                    }
+                    else{
+                        if(onboarding[sender]["context"] === "WAITING_CREATE_TASK"){
+                            if (text.trim().charAt(0) === '/') {
+                                var cmnd = text.trim().split(" ")[0]
+                                if(cmnd.trim().toUpperCase() === '/CREATE'){
+                                    var item = text.trim().split(cmnd).join("").trim()
+                                    if(item && item !== ""){
+                                        onboarding[sender]["item"] = item
+                                        let messageData = {
+                                            "text": "Awesome 👏! You have created a test task. Don't worry, I will save this task and allow you to create new once onboarding is over.\n Let's find how to check today's task. Type /today🏻"
+                                        }
+                                        sendMessage(sender, messageData)
+                                        onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
+                                        return
+                                    }
+                                    else{
+                                        let messageData = {
+                                            "text": "You should specify the task along with the command. Like '/create Meet Roy at CCD'. Try again."
+                                        }
+                                        sendMessage(sender, messageData)
+                                        return
+                                    }
+                                }
+                            }
+                            else{
+                                let messageData = {
+                                    "text": "Start commands with '/'. Like '/create Join the club'. Try again."
+                                }
+                                sendMessage(sender, messageData)
+                                return
+                            }
+                        }
+                        else if(onboarding[sender]["context"] === "WAITING_TODAY_TASK_CREATED"){
+                            if (text.trim().charAt(0) === '/') {
+                                var cmnd = text.trim().split(" ")[0]
+                                if(cmnd.trim().toUpperCase() === '/TODAY'){
+                                    var item = text.trim().split(cmnd).join("").trim()
+                                    if(item && item !== ""){
+                                        onboarding[sender]["item"] = item
+                                        let messageData = {
+                                            "text": "Oopz 😐! No need to append anything with /today. Try again please🏻"
+                                        }
+                                        sendMessage(sender, messageData)
+                                        return
+                                    }
+                                    else{
+                                        let messageData = {
+                                            "text": "Your today's task:"+onboarding[sender]["item"]+"\nCool 😎. What about marking the task as done? Type /done."
+                                        }
+                                        sendMessage(sender, messageData)
+                                        onboarding[sender]["context"] = "WAITING_MARKING_DONE"
+                                        return
+                                    }
+                                }
+                            }
+                            else{
+                                let messageData = {
+                                    "text": "You forgot / again. Its ok. Try again 😊"
+                                }
+                                sendMessage(sender, messageData)
+                                return
+                            }
+                        }
+                        else if(onboarding[sender]["context"] === "WAITING_MARKING_DONE"){
+                            if (text.trim().charAt(0) === '/') {
+                                var cmnd = text.trim().split(" ")[0]
+                                if(cmnd.trim().toUpperCase() === '/DONE'){
+                                    var item = text.trim().split(cmnd).join("").trim()
+                                    if(item && item !== ""){
+                                        onboarding[sender]["item"] = item
+                                        let messageData = {
+                                            "text": "Nah! No need to append anything with /done. Try again please🏻"
+                                        }
+                                        sendMessage(sender, messageData)
+                                        return
+                                    }
+                                    else{
+                                        let messageData = {
+                                            "text": "Super awesome 😍. Thats enough for getting started. Use /help to get list of commands to try out. All the best 👍🏻! Be super organised",
+                                            "quick_replies": [
+                                                {
+                                                    "content_type": "text",
+                                                    "title": "/help🏻",
+                                                    "payload": "ONBOARDING_STOPPED_HELP"
+                                                }
+                                            ]
+                                        }
+                                        sendMessage(sender, messageData)
+                                        onboarding[sender]["context"] = "DONE"
+                                        onboarding[sender] = null
+                                        return
+                                    }
+                                }
+                            }
+                            else{
+                                let messageData = {
+                                    "text": "You forgot / again. Its ok. Try again 😊"
+                                }
+                                sendMessage(sender, messageData)
+                                return
+                            }
+                        }
+                    }
+
+                    onboarding[sender] = null
+                }
                 
                 handle(text, sender, (reply)=>{
                     var messageData : any = null
@@ -110,7 +252,33 @@ app.post('/webhook/', function (req, res) {
                 
             }
             else if(event.postback && event.postback.payload){
-                
+                if(event.postback.payload === "MESSENGER_NEW_THREAD"){
+                    /* New User! Hurray!!! Lets welcome him/her! */
+                    User.fetch(sender, (success, user)=>{
+                        onboarding[sender] = { started : true, context : "WAITING_TUTORIAL_RESPONSE" };
+                        let messageData = {
+                            "text" : "Hi " + user.name + "! Happy to see you here :)\n I am another task manager for you. But, what makes me different is that I will let you concentrate on a single BIG task everyday. Continue looking how to use me?",
+                            "quick_replies" : [
+                                {
+                                    "content_type":"text",
+                                    "title":"Yea!",
+                                    "payload":"ONBOARDING_START_TUTORIALS"
+                                },
+                                {
+                                    "content_type":"text",
+                                    "title":"Nah, later",
+                                    "payload":"ONBOARDING_IGNORE_TUTORIALS"
+                                }
+                            ]
+
+                        }
+                        sendMessage(sender, messageData)
+                    })
+
+                }
+                else{
+                    console.log("Unknown postback : "+ event.postback.payload)
+                }
             }
         }
     }
@@ -182,6 +350,18 @@ function handle(text:string, sender:string, callback:(reply:any)=>void) {
     else{
         callback(null)
     }
+}
+
+function sendMessage(recipient: string, messageData: any) {
+    request({
+        url: 'https://graph.facebook.com/v2.6/me/messages',
+        qs: { access_token: token },
+        method: 'POST',
+        json: {
+            recipient: { id: recipient },
+            message: messageData,
+        }
+    });//TODO:Error Handling???
 }
 
 
