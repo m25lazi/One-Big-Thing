@@ -165,8 +165,8 @@ app.post('/webhook/', function (req, res) {
                                 if(cmnd.trim().toUpperCase() === '/TODAY'){
                                     var item = text.trim().split(cmnd).join("").trim()
                                     if(item && item !== ""){
-                                        onboarding[sender]["item"] = item
                                         let messageData = {
+                                            "text": "Oopz :|! No need to append anything with /today. Try again please"
                                         }
                                         sendMessage(sender, messageData)
                                         onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
@@ -205,7 +205,6 @@ app.post('/webhook/', function (req, res) {
                                 if(cmnd.trim().toUpperCase() === '/DONE'){
                                     var item = text.trim().split(cmnd).join("").trim()
                                     if(item && item !== ""){
-                                        onboarding[sender]["item"] = item
                                         let messageData = {
                                             "text": "Nah! No need to append anything with /done. Try again please🏻"
                                         }
