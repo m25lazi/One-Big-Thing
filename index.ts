@@ -86,11 +86,8 @@ app.post('/webhook/', function (req, res) {
                 User.fetch(sender, (success, user)=>{
                     
                 })
-                console.log("onboarding ? : "+JSON.stringify(onboarding[sender]))
                 if(onboarding[sender] && onboarding[sender]["started"] == true){
-                    console.log("onboarding user...")
                     if(quickReplyPayload){
-                        console.log("quickReplyPayload : "+quickReplyPayload)
                         if(quickReplyPayload === "ONBOARDING_IGNORE_TUTORIALS"){
                             let messageData = {
                                 "text": "Fine :) One note - You can invoke me using commands. Type /help anytime to get list of commands.",
@@ -104,7 +101,6 @@ app.post('/webhook/', function (req, res) {
                             }
                             sendMessage(sender, messageData)
                             onboarding[sender]["context"] = "DONE"
-                            console.log("Setting context to DONE")
                             return
                         }
                         else if(quickReplyPayload === "ONBOARDING_START_TUTORIALS"){
@@ -114,7 +110,6 @@ app.post('/webhook/', function (req, res) {
 
                             sendMessage(sender, messageData)
                             onboarding[sender]["context"] = "WAITING_CREATE_TASK"
-                            console.log("Setting context to WAITING_CREATE_TASK")
                             return
                         }
                         else if(quickReplyPayload ==="ONBOARDING_STOP"){
@@ -135,7 +130,6 @@ app.post('/webhook/', function (req, res) {
                                         }
                                         sendMessage(sender, messageData)
                                         onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
-                                        console.log("Setting context to WAITING_TODAY_TASK_CREATED")
                                         return
                                     }
                                     else{
@@ -144,7 +138,6 @@ app.post('/webhook/', function (req, res) {
                                         }
                                         sendMessage(sender, messageData)
                                         onboarding[sender]["context"] = "WAITING_CREATE_TASK"
-                                        console.log("Setting context to WAITING_CREATE_TASK")
                                         return
                                     }
                                 }
@@ -154,8 +147,7 @@ app.post('/webhook/', function (req, res) {
                                     "text": "Start commands with '/'. Like '/create Join the club'. Try again."
                                 }
                                 sendMessage(sender, messageData)
-                                onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
-                                console.log("Setting context to WAITING_TODAY_TASK_CREATED")
+                                onboarding[sender]["context"] = "WAITING_CREATE_TASK"
                                 return
                             }
                         }
@@ -171,7 +163,6 @@ app.post('/webhook/', function (req, res) {
                                         }
                                         sendMessage(sender, messageData)
                                         onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
-                                        console.log("Setting context to WAITING_TODAY_TASK_CREATED")
                                         return
                                     }
                                     else{
@@ -180,7 +171,6 @@ app.post('/webhook/', function (req, res) {
                                         }
                                         sendMessage(sender, messageData)
                                         onboarding[sender]["context"] = "WAITING_MARKING_DONE"
-                                        console.log("Setting context to WAITING_MARKING_DONE")
                                         return
                                     }
                                 }
@@ -191,7 +181,6 @@ app.post('/webhook/', function (req, res) {
                                 }
                                 sendMessage(sender, messageData)
                                 onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
-                                console.log("Setting context to WAITING_TODAY_TASK_CREATED")
                                 return
                             }
                         }
@@ -207,7 +196,6 @@ app.post('/webhook/', function (req, res) {
                                         }
                                         sendMessage(sender, messageData)
                                         onboarding[sender]["context"] = "WAITING_MARKING_DONE"
-                                        console.log("Setting context to WAITING_MARKING_DONE")
                                         return
                                     }
                                     else{
@@ -222,8 +210,6 @@ app.post('/webhook/', function (req, res) {
                                             ]
                                         }
                                         sendMessage(sender, messageData)
-                                        onboarding[sender]["context"] = "DONE"
-                                        console.log("Setting context to DONE")
                                         onboarding[sender] = null
                                         return
                                     }
@@ -235,12 +221,10 @@ app.post('/webhook/', function (req, res) {
                                 }
                                 sendMessage(sender, messageData)
                                 onboarding[sender]["context"] = "WAITING_MARKING_DONE"
-                                console.log("Setting context to WAITING_MARKING_DONE")
                                 return
                             }
                         }
                     }
-                    console.log("Onboarding stopped")
                     onboarding[sender] = null
                 }
                 
