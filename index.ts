@@ -86,16 +86,17 @@ app.post('/webhook/', function (req, res) {
                 User.fetch(sender, (success, user)=>{
                     
                 })
-
+                console.log("onboarding ? : "+JSON.stringify(onboarding[sender]))
                 if(onboarding[sender] && onboarding[sender]["started"] == true){
+                    console.log("onboarding user...")
                     if(quickReplyPayload){
+                        console.log("quickReplyPayload : "+quickReplyPayload)
                         if(quickReplyPayload === "ONBOARDING_IGNORE_TUTORIALS"){
                             let messageData = {
                                 "text": "Fine :) One note - You can invoke me using commands. Type /help anytime to get list of commands.",
                                 "quick_replies": [
                                     {
                                         "content_type": "text",
-                                        "title": "👍🏻",
                                         "payload": "ONBOARDING_STOP"
                                     }
                                 ]
@@ -127,7 +128,6 @@ app.post('/webhook/', function (req, res) {
                                     if(item && item !== ""){
                                         onboarding[sender]["item"] = item
                                         let messageData = {
-                                            "text": "Awesome 👏🏻! You have created a test task. Don't worry, I will save this task and allow you to create new once onboarding is over.\n Let's find how to check today's task. Type /today🏻 "
                                         }
                                         sendMessage(sender, messageData)
                                         onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
@@ -198,7 +198,6 @@ app.post('/webhook/', function (req, res) {
                                     }
                                     else{
                                         let messageData = {
-                                            "text": "Super awesome 😍. Thats enough for getting started. Use /help to get list of commands to try out. All the best 👍🏻! Be super organised",
                                             "quick_replies": [
                                                 {
                                                     "content_type": "text",
