@@ -126,7 +126,7 @@ app.post('/webhook/', function (req, res) {
                                     if(item && item !== ""){
                                         onboarding[sender]["item"] = item
                                         let messageData = {
-                                            "text": "Awesome! You have created a test task. Don't worry, I will save this task and allow you to create new once onboarding is over.\n Let's find how to check today's task. Type /today"
+                                            "text": "Awesome! You have created a test task. Don't worry, I will save this task and allow you to create new once onboarding is over.\nLet's find how to check today's task. Type /today"
                                         }
                                         sendMessage(sender, messageData)
                                         onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
@@ -140,6 +140,14 @@ app.post('/webhook/', function (req, res) {
                                         onboarding[sender]["context"] = "WAITING_CREATE_TASK"
                                         return
                                     }
+                                }
+                                else{
+                                    let messageData = {
+                                        "text": "Its /create. Try again."
+                                    }
+                                    sendMessage(sender, messageData)
+                                    onboarding[sender]["context"] = "WAITING_CREATE_TASK"
+                                    return
                                 }
                             }
                             else{
@@ -159,7 +167,6 @@ app.post('/webhook/', function (req, res) {
                                     if(item && item !== ""){
                                         onboarding[sender]["item"] = item
                                         let messageData = {
-                                            "text": "Oopz 😐! No need to append anything with /today. Try again please🏻"
                                         }
                                         sendMessage(sender, messageData)
                                         onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
@@ -167,12 +174,20 @@ app.post('/webhook/', function (req, res) {
                                     }
                                     else{
                                         let messageData = {
-                                            "text": "Your today's task:"+onboarding[sender]["item"]+"\nCool 😎. What about marking the task as done? Type /done."
+                                            "text": "Your today's task : "+onboarding[sender]["item"]+"\nCool B). What about marking the task as done? Type /done."
                                         }
                                         sendMessage(sender, messageData)
                                         onboarding[sender]["context"] = "WAITING_MARKING_DONE"
                                         return
                                     }
+                                }
+                                else{
+                                    let messageData = {
+                                        "text": "Its /today. Try again."
+                                    }
+                                    sendMessage(sender, messageData)
+                                    onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
+                                    return
                                 }
                             }
                             else{
@@ -200,11 +215,11 @@ app.post('/webhook/', function (req, res) {
                                     }
                                     else{
                                         let messageData = {
-                                            "text": "Super awesome 😍. Thats enough for getting started. Use /help to get list of commands to try out. All the best! Be super organised",
+                                            "text": "Super awesome ^_^.Thats enough for getting started. Use /help to get list of commands to try out. All the best! Be super organised",
                                             "quick_replies": [
                                                 {
                                                     "content_type": "text",
-                                                    "title": "/help🏻",
+                                                    "title": "/help",
                                                     "payload": "ONBOARDING_STOPPED_HELP"
                                                 }
                                             ]
@@ -213,6 +228,14 @@ app.post('/webhook/', function (req, res) {
                                         onboarding[sender] = null
                                         return
                                     }
+                                }
+                                else{
+                                    let messageData = {
+                                        "text": "Its /done. Try again."
+                                    }
+                                    sendMessage(sender, messageData)
+                                    onboarding[sender]["context"] = "WAITING_MARKING_DONE"
+                                    return
                                 }
                             }
                             else{
