@@ -127,7 +127,7 @@ app.post('/webhook/', function (req, res) {
                                     if(item && item !== ""){
                                         onboarding[sender]["item"] = item
                                         let messageData = {
-                                            "text": "Awesome 👏! You have created a test task. Don't worry, I will save this task and allow you to create new once onboarding is over.\n Let's find how to check today's task. Type /today🏻"
+                                            "text": "Awesome 👏🏻! You have created a test task. Don't worry, I will save this task and allow you to create new once onboarding is over.\n Let's find how to check today's task. Type /today🏻 "
                                         }
                                         sendMessage(sender, messageData)
                                         onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
@@ -138,6 +138,7 @@ app.post('/webhook/', function (req, res) {
                                             "text": "You should specify the task along with the command. Like '/create Meet Roy at CCD'. Try again."
                                         }
                                         sendMessage(sender, messageData)
+                                        onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
                                         return
                                     }
                                 }
@@ -147,6 +148,7 @@ app.post('/webhook/', function (req, res) {
                                     "text": "Start commands with '/'. Like '/create Join the club'. Try again."
                                 }
                                 sendMessage(sender, messageData)
+                                onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
                                 return
                             }
                         }
@@ -257,7 +259,7 @@ app.post('/webhook/', function (req, res) {
                     User.fetch(sender, (success, user)=>{
                         onboarding[sender] = { started : true, context : "WAITING_TUTORIAL_RESPONSE" };
                         let messageData = {
-                            "text" : "Hi " + user.name + "! Happy to see you here :)\n I am another task manager for you. But, what makes me different is that I will let you concentrate on a single BIG task everyday. Continue looking how to use me?",
+                            "text" : "Hi " + user.name + "! Happy to see you here :)\nI am another task manager for you. But, what makes me different is that I will let you concentrate on a single BIG task everyday. Continue looking how to use me?",
                             "quick_replies" : [
                                 {
                                     "content_type":"text",
