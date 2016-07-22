@@ -17,7 +17,7 @@ class CreateCommand extends Command {
     public handle (callback : Commands.CommandHandler){
         console.log("Handling /UPDATE")
         if(!this.payload.message || this.payload.message.trim() === "")
-            callback( {message : "You need to specify the item title. Eg: /Update Complete Part 2"} );
+            return callback( {message : "You need to specify the item title. Eg: /Update Complete Part 2"} );
         
         Item.update(this.payload.sender, this.payload.message.trim(), (success, item) => {
             if(success){

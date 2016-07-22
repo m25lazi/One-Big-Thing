@@ -17,7 +17,7 @@ class CreateCommand extends Command {
     public handle (callback : Commands.CommandHandler){
         console.log("Handling /CREATE")
         if(!this.payload.message || this.payload.message.trim() === "")
-            callback( {message : "You need to specify the item title. Eg: /Create Complete Part 1"} );
+            return callback( {message : "You need to specify the item title. Eg: /Create Complete Part 1"} );
         
         Item.add(this.payload.sender, this.payload.message.trim(), (success, item) => {
             if(success){
