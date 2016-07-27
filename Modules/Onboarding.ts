@@ -157,7 +157,7 @@ class Onboarding{
             if (cmnd.trim().toUpperCase() === '/DONE') {
                 var item = text.trim().split(cmnd).join("").trim()
                 if (item && item !== "") {
-                    let message = "Nah! No need to append anything with /done. Try again please🏻"
+                    let message = "Nah! No need to append anything with /done. Try again please"
                     return Messenger.Helper.CreateResponse(message, null);
                 }
                 else {
