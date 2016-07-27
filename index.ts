@@ -100,145 +100,30 @@ app.post('/webhook/', function (req, res) {
                                 text: reply
                             }
                         }
-                        else if(onboarding[sender]["context"] === "WAITING_TODAY_TASK_CREATED"){
-                            if (text.trim().charAt(0) === '/') {
-                                var cmnd = text.trim().split(" ")[0]
-                                if(cmnd.trim().toUpperCase() === '/TODAY'){
-                                    var item = text.trim().split(cmnd).join("").trim()
-                                    if(item && item !== ""){
-                                        let messageData = {
-                                            "text": "Oopz :|! No need to append anything with /today. Try again please"
-                                        }
-                                        sendMessage(sender, messageData)
-                                        onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
-                                        return
-                                    }
-                                    else{
-                                        let messageData = {
-                                            "text": "Your today's task : "+onboarding[sender]["item"]+"\nCool B). What about marking the task as done? Type /done."
-                                        }
-                                        sendMessage(sender, messageData)
-                                        onboarding[sender]["context"] = "WAITING_MARKING_DONE"
-                                        return
-                                    }
-                                }
-                                else{
-                                    let messageData = {
-                                        "text": "Its /today. Try again."
-                                    }
-                                    sendMessage(sender, messageData)
-                                    onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
-                                    return
-                                }
-                            }
-                            else{
-                                let messageData = {
-                                    "text": "You forgot / again. Its ok. Try again 😊"
-                                }
-                                sendMessage(sender, messageData)
-                                onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
-                                return
+                        else {
+                            messageData = {
+                                text: "Unknown command. Use /help for more info."
                             }
                         }
-                        else if(onboarding[sender]["context"] === "WAITING_MARKING_DONE"){
-                            if (text.trim().charAt(0) === '/') {
-                                var cmnd = text.trim().split(" ")[0]
-                                if(cmnd.trim().toUpperCase() === '/DONE'){
-                                    var item = text.trim().split(cmnd).join("").trim()
-                                    if(item && item !== ""){
-                                        let messageData = {
-                                            "text": "Nah! No need to append anything with /done. Try again please🏻"
-                                        }
-                                        sendMessage(sender, messageData)
-                                        onboarding[sender]["context"] = "WAITING_MARKING_DONE"
-                                        return
-                                    }
-                                    else{
-                                        let messageData = {
-                                            "text": "Super awesome ^_^.Thats enough for getting started. Use /help to get list of commands to try out. All the best! Be super organised",
-                                            "quick_replies": [
-                                                {
-                                                    "content_type": "text",
-                                                    "title": "/help",
-                                                    "payload": "ONBOARDING_STOPPED_HELP"
-                                                }
-                                            ]
-                                        }
-                                        sendMessage(sender, messageData)
-                                        onboarding[sender] = null
-                                        return
-                                    }
-                                }
-                                else{
-                                    let messageData = {
-                                        "text": "Its /done. Try again."
-                                    }
-                                    sendMessage(sender, messageData)
-                                    onboarding[sender]["context"] = "WAITING_MARKING_DONE"
-                                    return
-                                }
+                        request({
+                            url: 'https://graph.facebook.com/v2.6/me/messages',
+                            qs: { access_token: token },
+                            method: 'POST',
+                            json: {
+                                recipient: { id: sender },
+                                message: messageData,
                             }
-                            else{
-                                let messageData = {
-                                    "text": "You forgot / again. Its ok. Try again 😊"
-                                }
-                                sendMessage(sender, messageData)
-                                onboarding[sender]["context"] = "WAITING_MARKING_DONE"
-                                return
-                            }
-                        }
-                    }
-                    onboarding[sender] = null
+                        });//TODO:Error Handling???
+                    })
                 }
-                
-                handle(text, sender, (reply)=>{
-                    var messageData : any = null
-                    if(reply){
-                        messageData = {
-                            text : reply
-                        }
-                    }
-                    else{
-                        messageData = {
-                            text : "Unknown command. Use /help for more info."
-                        }
-                    }
-                    request({
-                        url: 'https://graph.facebook.com/v2.6/me/messages',
-                        qs: { access_token: token },
-                        method: 'POST',
-                        json: {
-                            recipient: { id: sender },
-                            message: messageData,
-                        }
-                    });//TODO:Error Handling???
-                })
-                
-                
                 
             }
             else if(event.postback && event.postback.payload){
                 if(event.postback.payload === "MESSENGER_NEW_THREAD"){
                     /* New User! Hurray!!! Lets welcome him/her! */
                     User.fetch(sender, (success, user)=>{
-                        onboarding[sender] = { started : true, context : "WAITING_TUTORIAL_RESPONSE" };
-                        let messageData = {
-                            "text" : "Hi " + user.name + "! Happy to see you here :)\nI am another task manager for you. But, what makes me different is that I will let you concentrate on a single BIG task everyday. Continue looking how to use me?",
-                            "quick_replies" : [
-                                {
-                                    "content_type":"text",
-                                    "title":"Yea!",
-                                    "payload":"ONBOARDING_START_TUTORIALS"
-                                },
-                                {
-                                    "content_type":"text",
-                                    "title":"Nah, later",
-                                    "payload":"ONBOARDING_IGNORE_TUTORIALS"
-                                }
-                            ]
-
-                        }
-                        sendMessage(sender, messageData)
+                        const response: Messenger.Response = Onboarding.start(sender, user.name);
+                        Messenger.Helper.send(sender, response);
                     })
 
                 }
