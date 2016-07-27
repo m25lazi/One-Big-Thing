@@ -21,6 +21,8 @@ let token = process.env.MESSENGER_PAGE_ACCESS_TOKEN;
 import Commands = require("./Modules/Commands/CommandFactory")
 import Item = require("./Modules/Models/Item")
 import User = require("./Modules/Models/User")
+import Onboarding = require("./Modules/Onboarding")
+import Messenger = require("./Modules/Models/Messenger")
 
 
 /* Start app */
@@ -40,7 +42,6 @@ app.get('/webhook/', (req, res) => {
 })
 
 let handledMessages : any = {} 
-let onboarding : any = {}
 app.post('/webhook/', function (req, res) {
     console.log('POST /webhook');
     console.log(JSON.stringify(req.body.entry))
@@ -86,77 +87,17 @@ app.post('/webhook/', function (req, res) {
                 User.fetch(sender, (success, user)=>{
                     
                 })
-                if(onboarding[sender] && onboarding[sender]["started"] == true){
-                    if(quickReplyPayload){
-                        if(quickReplyPayload === "ONBOARDING_IGNORE_TUTORIALS"){
-                            let messageData = {
-                                "text": "Fine :) One note - You can invoke me using commands. Type /help anytime to get list of commands.",
-                                "quick_replies": [
-                                    {
-                                        "content_type": "text",
-                                        "title": "OK",               
-                                        "payload": "ONBOARDING_STOP"
-                                    }
-                                ]
-                            }
-                            sendMessage(sender, messageData)
-                            onboarding[sender]["context"] = "DONE"
-                            return
-                        }
-                        else if(quickReplyPayload === "ONBOARDING_START_TUTORIALS"){
-                            let messageData = {
-                                "text": "Let's get started. Everyday, you can create a task, that one important task for the day. Use /create command for this. Example : '/create Complete watching Android animations basic course videos'. Give it a try"
-                            }
-
-                            sendMessage(sender, messageData)
-                            onboarding[sender]["context"] = "WAITING_CREATE_TASK"
-                            return
-                        }
-                        else if(quickReplyPayload ==="ONBOARDING_STOP"){
-                            onboarding[sender] = null
-                            return
-                        }
-                    }
-                    else{
-                        if(onboarding[sender]["context"] === "WAITING_CREATE_TASK"){
-                            if (text.trim().charAt(0) === '/') {
-                                var cmnd = text.trim().split(" ")[0]
-                                if(cmnd.trim().toUpperCase() === '/CREATE'){
-                                    var item = text.trim().split(cmnd).join("").trim()
-                                    if(item && item !== ""){
-                                        onboarding[sender]["item"] = item
-                                        let messageData = {
-                                            "text": "Awesome! You have created a test task. Don't worry, I will save this task and allow you to create new once onboarding is over.\nLet's find how to check today's task. Type /today"
-                                        }
-                                        sendMessage(sender, messageData)
-                                        onboarding[sender]["context"] = "WAITING_TODAY_TASK_CREATED"
-                                        return
-                                    }
-                                    else{
-                                        let messageData = {
-                                            "text": "You should specify the task along with the command. Like '/create Meet Roy at CCD'. Try again."
-                                        }
-                                        sendMessage(sender, messageData)
-                                        onboarding[sender]["context"] = "WAITING_CREATE_TASK"
-                                        return
-                                    }
-                                }
-                                else{
-                                    let messageData = {
-                                        "text": "Its /create. Try again."
-                                    }
-                                    sendMessage(sender, messageData)
-                                    onboarding[sender]["context"] = "WAITING_CREATE_TASK"
-                                    return
-                                }
-                            }
-                            else{
-                                let messageData = {
-                                    "text": "Start commands with '/'. Like '/create Join the club'. Try again."
-                                }
-                                sendMessage(sender, messageData)
-                                onboarding[sender]["context"] = "WAITING_CREATE_TASK"
-                                return
+                
+                const response: Messenger.Response = Onboarding.handle(sender, quickReplyPayload, text);
+                if(response){
+                    Messenger.Helper.send(sender, response);
+                }
+                else{
+                    handle(text, sender, (reply) => {
+                        var messageData: any = null
+                        if (reply) {
+                            messageData = {
+                                text: reply
                             }
                         }
                         else if(onboarding[sender]["context"] === "WAITING_TODAY_TASK_CREATED"){

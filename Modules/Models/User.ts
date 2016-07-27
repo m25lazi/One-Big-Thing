@@ -18,7 +18,7 @@ enum Gender {
  */
 export = class User {
     
-    name : String // First name
+    name : string // First name
     timezone : number 
     avatarUrl : String
     gender : Gender
