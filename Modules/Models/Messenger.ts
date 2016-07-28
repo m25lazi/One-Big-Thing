@@ -4,9 +4,71 @@ var request = require('request'); //TODO: JS??? Port to TypeScript!!!
  * Interface for Messenger Response.
  */
 export interface Response{
-    text: string,
+    text?: string,
     quick_replies?: Array<QuickReply>
+    attachment?: Attachment
     //TODO: Other types
+}
+
+/**
+ * 
+ */
+export interface Attachment{
+    type: string,
+    payload: Payload
+}
+
+export class TemplateAttachment implements Attachment{
+    type: string = "template"
+    constructor(public payload: Payload){
+    } 
+}
+
+export interface Payload{
+    template_type: string,
+    elements: Array<PayloadElement>
+}
+
+export class GenericPayload implements Payload{
+    template_type: string = "generic"
+    constructor(public elements: Array<PayloadElement>){
+    } 
+}
+
+export interface PayloadElement{
+    title: string,
+    image_url?: string,
+    subtitle?: string,
+    buttons: Array<Button>
+}
+
+export interface Button{
+    type: string,
+    title: string
+    url?: string,
+    payload?: string
+}
+
+export class URLButton implements Button{
+    type: string = "web_url"
+    
+    constructor(public title: string, public url: string){
+
+    }
+}
+
+export class PostbackButton implements Button{
+    type: string = "postback"
+    constructor(public title: string, public payload: string){
+
+    }
+}
+
+export class PhoneNumberButton implements Button{
+    type: string = "phone_number"
+    constructor(public title: string, public payload: string){
+
+    }
 }
 
 /**
@@ -18,6 +80,19 @@ export interface QuickReply{
     title: string,
     payload: string
 }
+
+
+export interface GenericTemplateMessage{
+}
+
+
+export class GenericAttachmentElement{
+    constructor (public title: string, public image_url: string, public subtitle: string, public buttons: Array<Button>){
+    }
+}
+
+
+
 
 /**
  * Helper class for Messenger Responses.
@@ -57,4 +132,18 @@ export class Helper{
             }
         });//TODO:Error Handling???
     }
+
+    static PayloadElement(title: string, image_url: string, subtitle: string, buttons: Array<Button>): PayloadElement{
+        if (title && buttons) {
+            return {
+                title: title,
+                image_url: image_url,
+                subtitle: subtitle,
+                buttons: buttons
+            }
+        }
+        return null;
+        
+    }
 }
+
