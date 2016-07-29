@@ -94,26 +94,7 @@ app.post('/webhook/', function (req, res) {
                 }
                 else{
                     handle(text, sender, (reply) => {
-                        var messageData: any = null
-                        if (reply) {
-                            messageData = {
-                                text: reply
-                            }
-                        }
-                        else {
-                            messageData = {
-                                text: "Unknown command. Use /help for more info."
-                            }
-                        }
-                        request({
-                            url: 'https://graph.facebook.com/v2.6/me/messages',
-                            qs: { access_token: token },
-                            method: 'POST',
-                            json: {
-                                recipient: { id: sender },
-                                message: messageData,
-                            }
-                        });//TODO:Error Handling???
+                        return sendMessage(sender, reply)
                     })
                 }
                 
@@ -128,7 +109,31 @@ app.post('/webhook/', function (req, res) {
 
                 }
                 else{
-                    console.log("Unknown postback : "+ event.postback.payload)
+                    try {
+                        const jsonPayload =  JSON.parse(event.postback.payload);
+                        if (jsonPayload.context) {
+                            if(jsonPayload.context === "today"){
+                                if(jsonPayload.button === "done"){
+                                    var command = new Commands.Done({command:"/done", sender: sender})
+                                    command.handle((cmdResponse) => {
+                                        const reply = cmdResponse.message
+                                        if (reply) {
+                                            return sendMessage(sender, { text: reply })
+                                        }
+                                        return sendMessage(sender, { text: "FATAL ERROR" })
+                                    }) 
+                                }
+                                else if(jsonPayload.button === "ok"){
+                                    //Nothing to do! Keep Calm and return
+                                    return
+                                }
+                            }
+                        }
+                    }
+                    catch (e) {
+                        console.log("Unknown postback : "+ event.postback.payload)
+                    }
+                    
                 }
             }
         }
@@ -193,8 +198,16 @@ function handle(text:string, sender:string, callback:(reply:any)=>void) {
             return
         }
         cmd.handle( (cmdResponse) => {
-            console.log(cmdResponse)
-            callback(cmdResponse.message)
+            const reply = cmdResponse.message
+            if(Commands.Today.canHandle(cmnd)){
+                return callback(createTodayResponse(cmdResponse.item, cmdResponse.errorDescription))
+            }
+            else{
+                if (reply) {
+                    return callback({ text: reply })
+                }
+            }
+            return callback({ text: "Unknown command. Use /help for more info." })
         })
         
     }
@@ -214,6 +227,7 @@ function sendMessage(recipient: string, messageData: any) {
         }
     });//TODO:Error Handling???
 }
+
 
 
 /**

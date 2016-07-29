@@ -6,7 +6,7 @@ import Item = require("../Models/Item");
  * DoneCommand
  * Handles /Done
  */
-class CreateCommand extends Command {
+class DoneCommand extends Command {
     
     static command = "/DONE"
     
@@ -29,4 +29,4 @@ class CreateCommand extends Command {
     }
 }
 
-export = CreateCommand
+export = DoneCommand

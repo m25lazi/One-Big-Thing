@@ -6,7 +6,7 @@ import Today = require("./TodayCommand");
 import Update = require("./UpdateCommand");
 import Done = require("./DoneCommand");
 import Streak = require("./StreakCommand");
-
+import Item = require("../Models/Item");
 
 export {Command, Help, About, Create, Today, Update, Done, Streak} 
 
@@ -21,8 +21,11 @@ export interface CommandHandler {
 }
 
 export interface CommandResponse {
-    message : string,
-    buttons? : [string]
+    success?: boolean,
+    message? : string,
+    buttons? : [string],
+    item?: Item,
+    errorDescription?: string
 }
 
 /**

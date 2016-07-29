@@ -117,7 +117,7 @@ export class Helper{
     }
 
     /* Sends given response POSTing to messenger platform SEND API */
-    static send(recipient: string, message: Response){
+    static send(recipient: string, message: any){
         console.log("sending");
         console.log(message);
         
