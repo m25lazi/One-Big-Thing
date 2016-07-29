@@ -212,7 +212,7 @@ function handle(text:string, sender:string, callback:(reply:any)=>void) {
         
     }
     else{
-        callback(null)
+        callback({ text: "Unknown command. Use /help for more info." })
     }
 }
 
@@ -229,6 +229,52 @@ function sendMessage(recipient: string, messageData: any) {
 }
 
 
+function createTodayResponse(item: Item, errorMessage: string):any {
+    if(errorMessage){
+        return {text : errorMessage}
+    }
+    else if(item){
+        let title = item.text
+        let element:Messenger.PayloadElement = null
+        if (item.done){
+            title = title + " (Done)"
+            const okPostbackPayload = {context:"today", button:"ok", created:new Date()}
+            const ok = new Messenger.PostbackButton("OK", JSON.stringify(okPostbackPayload))
+            element = Messenger.Helper.PayloadElement(title, null, dateFormatter(item.date), [ok])
+        }
+        else{
+            const done = new Messenger.PostbackButton("Mark Done", JSON.stringify({context:"today", button:"done", user: item.user, date:item.date, created:new Date()}))
+            console.log(JSON.stringify({context:"today", button:"done", user: item.user, date:item.date, created:new Date()}))
+            //"{\"context\":\"today\",\"button\":\"done\",\"user\":\"835579686547079\",\"date\":\"20160729\",\"created\":\"2016-07-29T16:04:49.494Z\"}"
+
+            const update = new Messenger.PostbackButton("Update", JSON.stringify({context:"today", button:"update", user: item.user, date:item.date, created:new Date()}))
+            console.log(JSON.stringify({context:"today", button:"update", user: item.user, date:item.date, created:new Date()}));
+            //{"context":"today","button":"update","user":"835579686547079","date":"20160729","created":"2016-07-29T16:04:49.494Z"}
+
+            element = Messenger.Helper.PayloadElement(title, null, dateFormatter(item.date), [done])
+        }
+
+        const payl = new Messenger.GenericPayload([element])
+
+        const attach = new Messenger.TemplateAttachment(payl)
+
+        let message = {
+            attachment: attach
+        }
+        return message
+    }
+    else{
+        return {text : "FATAL ERROR"}
+    }
+    
+}
+
+var dateFormat = require('dateformat');
+import Today = require("./Modules/Extensions/Today")
+function dateFormatter(date:string):string {
+    var now = Today.fromNumber(parseInt(date, 10)).toDate();
+    return dateFormat(now, "dddd, mmmm dS")
+}
 
 
 /**
