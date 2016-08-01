@@ -22,6 +22,7 @@ import Commands = require("./Modules/Commands/CommandFactory")
 import Item = require("./Modules/Models/Item")
 import User = require("./Modules/Models/User")
 import Onboarding = require("./Modules/Onboarding")
+import ContextHandler = require("./Modules/ContextHandler")
 import Messenger = require("./Modules/Models/Messenger")
 
 
@@ -60,18 +61,6 @@ app.post('/webhook/', function (req, res) {
                 var messageId = event.message.mid;
                 if(handledMessages[messageId] === true){
                     console.log("Message already handled");
-                    var messageData = {
-                        text: "DEBUG\nMessage already handled\n Current id : "+messageId+"\n handledMessages : "+JSON.stringify(handledMessages)
-                    }
-                    request({
-                        url: 'https://graph.facebook.com/v2.6/me/messages',
-                        qs: { access_token: token },
-                        method: 'POST',
-                        json: {
-                            recipient: { id: sender },
-                            message: messageData,
-                        }
-                    });
                     return;
                 }
 
@@ -88,15 +77,24 @@ app.post('/webhook/', function (req, res) {
                     
                 })
                 
-                const response: Messenger.Response = Onboarding.handle(sender, quickReplyPayload, text);
-                if(response){
-                    Messenger.Helper.send(sender, response);
+                var response: Messenger.Response = Onboarding.handle(sender, quickReplyPayload, text);
+                if(response)
+                    return Messenger.Helper.send(sender, response);
+                
+                if (quickReplyPayload) {
+                    response = ContextHandler.handleQuickReply(sender, quickReplyPayload)
+                    if (response)
+                        return Messenger.Helper.send(sender, response);
                 }
-                else{
-                    handle(text, sender, (reply) => {
-                        return sendMessage(sender, reply)
-                    })
-                }
+
+                response = ContextHandler.handleTextMessage(sender, text)
+                if (response)
+                    return Messenger.Helper.send(sender, response);
+
+                handle(text, sender, (reply) => {
+                    return sendMessage(sender, reply)
+                })
+                
                 
             }
             else if(event.postback && event.postback.payload){
@@ -120,8 +118,15 @@ app.post('/webhook/', function (req, res) {
                                         if (reply) {
                                             return sendMessage(sender, { text: reply })
                                         }
-                                        return sendMessage(sender, { text: "FATAL ERROR" })
+                                        
                                     }) 
+                                }
+                                else if(jsonPayload.button === "update"){
+                                    const response = ContextHandler.createFromPostback(sender, jsonPayload.button, "attachment.today")
+                                    if(response){
+                                        return sendMessage(sender, response)
+                                    }
+                                    return sendMessage(sender, { text: "FATAL ERROR" })
                                 }
                                 else if(jsonPayload.button === "ok"){
                                     //Nothing to do! Keep Calm and return
