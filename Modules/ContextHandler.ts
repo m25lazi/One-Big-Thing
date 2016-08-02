@@ -48,10 +48,14 @@ class ContextHandler{
                         break;
 
                     default:
+                        callback(null)
                         break;
                 }
+                return
             }
         }
+
+        return callback(null)
     }
 
     static handleQuickReply(user:string, payload:string, callback:ContextCompletionHandler){
@@ -65,11 +69,13 @@ class ContextHandler{
                         break;
 
                     default:
+                        callback(null)
                         break;
                 }
+                return
             }
         }
-        
+        return callback(null)
     }
 
 
