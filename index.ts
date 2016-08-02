@@ -82,18 +82,36 @@ app.post('/webhook/', function (req, res) {
                     return Messenger.Helper.send(sender, response);
                 
                 if (quickReplyPayload) {
-                    response = ContextHandler.handleQuickReply(sender, quickReplyPayload)
-                    if (response)
-                        return Messenger.Helper.send(sender, response);
+                    ContextHandler.handleQuickReply(sender, quickReplyPayload, (qrresponse)=>{
+                        if(qrresponse)
+                            return Messenger.Helper.send(sender, qrresponse);
+                        else{
+                            ContextHandler.handleTextMessage(sender, text, (txtresponse) => {
+                                if (txtresponse)
+                                    return Messenger.Helper.send(sender, txtresponse);
+                                else{
+                                    handle(text, sender, (reply) => {
+                                        return sendMessage(sender, reply)
+                                    })
+                                }
+                            })
+                        }
+                    })
+                        
+                }
+                else{
+                    ContextHandler.handleTextMessage(sender, text, (txtresponse) => {
+                        if (txtresponse)
+                            return Messenger.Helper.send(sender, txtresponse);
+                        else {
+                            handle(text, sender, (reply) => {
+                                return sendMessage(sender, reply)
+                            })
+                        }
+                    })
                 }
 
-                response = ContextHandler.handleTextMessage(sender, text)
-                if (response)
-                    return Messenger.Helper.send(sender, response);
-
-                handle(text, sender, (reply) => {
-                    return sendMessage(sender, reply)
-                })
+                
                 
                 
             }
@@ -122,11 +140,13 @@ app.post('/webhook/', function (req, res) {
                                     }) 
                                 }
                                 else if(jsonPayload.button === "update"){
-                                    const response = ContextHandler.createFromPostback(sender, jsonPayload.button, "attachment.today")
-                                    if(response){
-                                        return sendMessage(sender, response)
-                                    }
-                                    return sendMessage(sender, { text: "FATAL ERROR" })
+                                    ContextHandler.createFromPostback(sender, jsonPayload.button, "attachment.today", (response)=>{
+                                        if (response)
+                                            return sendMessage(sender, response)
+                                            
+                                        return sendMessage(sender, { text: "FATAL ERROR" })
+                                    })
+                                    
                                 }
                                 else if(jsonPayload.button === "ok"){
                                     //Nothing to do! Keep Calm and return
