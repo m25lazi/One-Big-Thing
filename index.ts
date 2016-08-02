@@ -276,7 +276,7 @@ function createTodayResponse(item: Item, errorMessage: string):any {
             console.log(JSON.stringify({context:"today", button:"update", user: item.user, date:item.date, created:new Date()}));
             //{"context":"today","button":"update","user":"835579686547079","date":"20160729","created":"2016-07-29T16:04:49.494Z"}
 
-            element = Messenger.Helper.PayloadElement(title, null, dateFormatter(item.date), [done])
+            element = Messenger.Helper.PayloadElement(title, null, dateFormatter(item.date), [done, update])
         }
 
         const payl = new Messenger.GenericPayload([element])
