@@ -46,6 +46,10 @@ class ContextHandler{
                     case ContextType.TaskUpdateTitle:
                         this.handleTaskUpdateTitle(user, context, text, callback);
                         break;
+                    
+                    case ContextType.TaskUpdateConfirmation:
+                        this.handleTaskUpdateConfirmation(user, context, text, callback);
+                        break;
 
                     default:
                         callback(null)
@@ -65,7 +69,7 @@ class ContextHandler{
             if(context.isValid()){
                 switch (context.type) {
                     case ContextType.TaskUpdateConfirmation:
-                        this.handleTaskUpdateConfirmation(user, context, payload, callback);
+                        this.handleTaskUpdateConfirmationQuickReply(user, context, payload, callback);
                         break;
 
                     default:
@@ -89,12 +93,51 @@ class ContextHandler{
 
         if(callback)
             callback({
-                text: "Are you sure, updating today's task to \"" + text + "\"",
+                text: "Are you sure, updating today's task to \"" + text + "\". Use reply suggestions or text back Y or N",
                 quick_replies: [yesQR, noQR]
             })
     }
 
-    private static handleTaskUpdateConfirmation(user:string, context:Context, payload:string, callback:ContextCompletionHandler){
+    private static handleTaskUpdateConfirmation(user:string, context:Context, text:string, callback:ContextCompletionHandler){
+
+        const txt = text.toUpperCase()
+        if(txt==="Y"){
+            if (!context.info) {
+                this.container[user] = context
+
+                if (callback)
+                    callback({ text: "FATAL ERROR" })
+                return
+            }
+
+            var command = new Commands.Update({ command: "/update", sender: user, message: context.info })
+            command.handle((cmdResponse) => {
+                this.container[user] = null
+                const reply = cmdResponse.message
+                if (reply) {
+                    if (callback)
+                        callback({ text: reply })
+                    return
+                }
+                if (callback)
+                    callback(null)
+
+            })
+        }
+        else if(txt==="N"){
+            this.container[user] = null
+            if (callback)
+                callback({ text: "Cool. Type /help for a list of commands." })
+            return
+        }
+        else{
+            if (callback)
+                callback({ text: "Didn't get that! :( Please reply Y or N to confirm updation." })
+            return
+        }
+    }
+
+    private static handleTaskUpdateConfirmationQuickReply(user:string, context:Context, payload:string, callback:ContextCompletionHandler){
         var jsonPayload:any = null
         try {
             jsonPayload =  JSON.parse(payload);
