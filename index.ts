@@ -227,6 +227,9 @@ function handle(text:string, sender:string, callback:(reply:any)=>void) {
             if(Commands.Today.canHandle(cmnd)){
                 return callback(createTodayResponse(cmdResponse.item, cmdResponse.errorDescription))
             }
+            if(Commands.About.canHandle(cmnd)){
+                return callback(createAboutResponse(cmdResponse.message))
+            }
             else{
                 if (reply) {
                     return callback({ text: reply })
@@ -251,6 +254,28 @@ function sendMessage(recipient: string, messageData: any) {
             message: messageData,
         }
     });//TODO:Error Handling???
+}
+
+function createAboutResponse(version: string): any{
+    if(version){
+        const changelogButton = new Messenger.URLButton("Changelogs", "https://github.com/m25lazi/One-Big-Thing")
+        const moreButton = new Messenger.URLButton("More", "https://github.com/m25lazi/One-Big-Thing")
+
+        const element = Messenger.Helper.PayloadElement("Today Messenger Bot", "https://visualhunt.com/photos/xl/5/book-pages-planner-calendar.jpg", version, [changelogButton, moreButton])
+
+        const payload = new Messenger.GenericPayload([element])
+
+        const attach = new Messenger.TemplateAttachment(payload)
+
+        return {
+            attachment: attach
+        }
+    }
+    else{
+        return {
+            text: "FATAL ERROR"
+        }
+    }
 }
 
 
