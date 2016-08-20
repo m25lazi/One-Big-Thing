@@ -153,12 +153,12 @@ app.post('/webhook/', function (req, res) {
                                     return
                                 }
                             }
-                        }
-                        else if(jsonPayload.context === "persistent-menu"){
-                            if(jsonPayload.button === "about"){
-                                new Commands.About(null).handle((commandResponse)=>{
-                                    sendMessage(sender, createAboutResponse(commandResponse.message))
-                                })
+                            else if (jsonPayload.context === "persistent-menu") {
+                                if (jsonPayload.button === "about") {
+                                    new Commands.About(null).handle((commandResponse) => {
+                                        sendMessage(sender, createAboutResponse(commandResponse.message))
+                                    })
+                                }
                             }
                         }
                     }
