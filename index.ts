@@ -159,6 +159,12 @@ app.post('/webhook/', function (req, res) {
                                         sendMessage(sender, createAboutResponse(commandResponse.message))
                                     })
                                 }
+                                else if (jsonPayload.button === "today") {
+                                    /* TODO: Maybe a static method to handle commands just by passing sender & text if reqd */
+                                    new Commands.Today({command:"/today", sender: sender}).handle((commandResponse) => {
+                                        sendMessage(sender, createTodayResponse(commandResponse.item, commandResponse.errorDescription))
+                                    })
+                                }
                             }
                         }
                     }
