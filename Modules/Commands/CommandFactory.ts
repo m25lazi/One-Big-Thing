@@ -25,6 +25,7 @@ export interface CommandResponse {
     message? : string,
     buttons? : [string],
     item?: Item,
+    error?: number,
     errorDescription?: string
 }
 

@@ -5,9 +5,10 @@
 
 import Database = require("../Database/Database")
 import Today = require("../Extensions/Today")
+import Error = require("../Error");
 
 interface ItemHandler {
-    (success : boolean, item : Item) : void
+    (error: number, item: Item) : void
 }
 
 interface StreakHandler {
@@ -27,34 +28,34 @@ class Item {
     
     static add(user : string, text : string, callback :  ItemHandler) {
         
-        this.fetch(user, 0, (success, item)=>{
+        this.fetch(user, 0, (error, item)=>{
             if(item){
-                /* Already there! throw for now */
-                return callback(false, null)
+                return callback(Error.Item.AlreadyCreated, null)
             }
-            else{
+            else if (error === Error.Item.NotFound){
                 var item = new Item(user, text)
                 item.date = new Today().toString()
-                if (item.canCreate()) {
-                    item.created = Math.round(new Date().getTime() / 1000)
-                    item.primary = item.date + item.user
-                    item.done = false
-                    item.itemId = Database.sharedDatabase().push("items", item)
-                    return callback(true, item)
-                }
+                item.created = Math.round(new Date().getTime() / 1000)
+                item.primary = item.date + item.user
+                item.done = false
+                item.itemId = Database.sharedDatabase().push("items", item)
+                return callback(0, item)
+            }
+            else{
+                return callback(error, null);
             }
         })
     }
     
     static update(user : string, text : string, callback :  ItemHandler) {
         
-        this.fetch(user, 0, (success, item)=>{
+        this.fetch(user, 0, (error, item)=>{
             if(!item){
-                callback (false, null)
+                callback (error, null)
             }
             else if (item.done){
                 /* Already completed! */
-                callback (false, null)
+                callback (Error.Item.AlreadyDone, null)
             }
             else{
                 item.text = text
@@ -63,32 +64,36 @@ class Item {
                     text : item.text,
                     updated : item.updated
                 })
-                callback (true, item)
+                callback (0, item)
             }
         }) 
     }
     
     static markDone(user : string, callback :  ItemHandler) {
         
-        this.fetch(user, 0, (success, item)=>{
+        this.fetch(user, 0, (error, item)=>{
             if(!item){
                 /* Nothing there to mark as complete! */
-                callback (false, null)
+                callback (error, null)
             }
             else if (item.done){
                 /* Already completed! */
-                callback (false, null)
+                callback (Error.Item.AlreadyDone, null)
             }
             else{
                 item.done = true
                 Database.sharedDatabase().update("items/"+item.itemId, {
                     done : true,
                 })
-                callback (true, item)
+                callback (0, item)
             }
         }) 
     }
     
+    /** 
+     * Fetch the task assigned to user on a particular day
+     * day = 0 only works
+    */
     static fetch(user : string, day : number, callback :  ItemHandler) {
         var date =  new Today().toNumber()
         date +=day //TODO: this wont work!!! 
@@ -109,14 +114,14 @@ class Item {
                         item.updated = fetched.updated
                         item.done = fetched.done
                         item.itemId = key
-                        callback(true, item)
+                        callback(0, item)
                     }
                     else {
                         throw "ITEM findEqual RETURNS MORE THAN 1"
                     }
                 }
                 else{
-                    callback(true, null)
+                    callback(Error.Item.NotFound, null)
                 }
                 
             }
@@ -161,11 +166,6 @@ class Item {
                 
             }
         })
-    }
-    
-    private canCreate() : boolean{
-        /* Check whether any entry is there for today */
-        return true;
     }
     
 }

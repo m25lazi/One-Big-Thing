@@ -1,6 +1,7 @@
 import Command = require("./Command");
 import Commands = require("./CommandFactory");
 import Item = require("../Models/Item");
+import Error = require("../Error");
 
 /**
  * UpdateCommand
@@ -17,15 +18,10 @@ class CreateCommand extends Command {
     public handle (callback : Commands.CommandHandler){
         console.log("Handling /UPDATE")
         if(!this.payload.message || this.payload.message.trim() === "")
-            return callback( {message : "You need to specify the item title. Eg: /Update Complete Part 2"} );
+            return callback({error: Error.Item.MissingTitle});
         
-        Item.update(this.payload.sender, this.payload.message.trim(), (success, item) => {
-            if(success){
-                callback( {message : "Updated!!! :)"} );
-            }
-            else{
-                callback( {message : "Error : Either you have not created a task or is marked done."} );
-            }
+        Item.update(this.payload.sender, this.payload.message.trim(), (error, item) => {
+            callback({error: error, item: item})
         })
         
     }

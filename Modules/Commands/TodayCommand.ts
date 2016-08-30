@@ -17,19 +17,8 @@ class CreateCommand extends Command {
     public handle (callback : Commands.CommandHandler){
         console.log("Handling /TODAY")
         
-        Item.fetch(this.payload.sender, 0, (success, item) => {
-            
-            if(success){
-                if(item){
-                    callback({item : item});
-                }
-                else{
-                    callback({errorDescription : "Not created yet! use /create command to create new item"});
-                }
-            }
-            else{
-                callback({errorDescription : "Some Error"});
-            }
+        Item.fetch(this.payload.sender, 0, (error, item) => {
+            callback({error: error, item: item})
         })
         
     }

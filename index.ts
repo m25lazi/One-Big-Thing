@@ -132,10 +132,7 @@ app.post('/webhook/', function (req, res) {
                                 if(jsonPayload.button === "done"){
                                     var command = new Commands.Done({command:"/done", sender: sender})
                                     command.handle((cmdResponse) => {
-                                        const reply = cmdResponse.message
-                                        if (reply) {
-                                            return sendMessage(sender, { text: reply })
-                                        }
+                                        return sendMessage(sender, createDoneItemResponse(cmdResponse.error, cmdResponse.item))
                                         
                                     }) 
                                 }
@@ -143,7 +140,7 @@ app.post('/webhook/', function (req, res) {
                                     ContextHandler.createFromPostback(sender, jsonPayload.button, "attachment.today", (response)=>{
                                         if (response)
                                             return sendMessage(sender, response)
-                                            
+
                                         return sendMessage(sender, { text: "FATAL ERROR" })
                                     })
                                     
@@ -162,7 +159,7 @@ app.post('/webhook/', function (req, res) {
                                 else if (jsonPayload.button === "today") {
                                     /* TODO: Maybe a static method to handle commands just by passing sender & text if reqd */
                                     new Commands.Today({command:"/today", sender: sender}).handle((commandResponse) => {
-                                        sendMessage(sender, createTodayResponse(commandResponse.item, commandResponse.errorDescription))
+                                        sendMessage(sender, createTodayResponse(commandResponse.error, commandResponse.item))
                                     })
                                 }
                             }
@@ -188,39 +185,7 @@ app.get('/health', (request, response)=>{
     let istDate = gmtDate + ((5*60+30)*60*1000)
         
     let date = new Date (istDate)
-    response.end("Typescript Express Server : "+date.toString())
-})
-
-app.post('/message', (request, response)=>{
-    console.log("=============== NEW REQUEST ==================");
-    console.log(request.body);
-    
-    let text : string = request.body.text;
-    let sender : string = request.body.sender;
-    if(text.trim().charAt(0) === '/'){
-        console.log("Commaaaaand!!!!")
-        User.fetch(sender, (success, user)=>{
-        })
-        var cmnd = text.trim().split(" ")[0]
-        console.log(cmnd);
-        
-        var cmd : Commands.Command = Commands.CommandFactory.commandFor({command : cmnd, message : text.trim().split(cmnd).join("").trim(), sender : sender})
-        console.log(cmd)
-        cmd.handle( (cmdResponse) => {
-            console.log(cmdResponse)
-            response.header("Content-Type", "application/json")
-            response.end(JSON.stringify(cmdResponse))
-        })
-        
-    }
-    else{
-        response.header("Content-Type", "application/json")
-        response.end(JSON.stringify(request.body))
-    }
-    
-    
-    
-    
+    response.end("Typescript Express Server : "+new Date().toString())
 })
 
 function handle(text:string, sender:string, callback:(reply:any)=>void) {
@@ -238,10 +203,19 @@ function handle(text:string, sender:string, callback:(reply:any)=>void) {
         cmd.handle( (cmdResponse) => {
             const reply = cmdResponse.message
             if(Commands.Today.canHandle(cmnd)){
-                return callback(createTodayResponse(cmdResponse.item, cmdResponse.errorDescription))
+                return callback(createTodayResponse(cmdResponse.error, cmdResponse.item))
             }
-            if(Commands.About.canHandle(cmnd)){
+            else if(Commands.About.canHandle(cmnd)){
                 return callback(createAboutResponse(cmdResponse.message))
+            }
+            else if(Commands.Create.canHandle(cmnd)){
+                return callback(createAddItemResponse(cmdResponse.error, cmdResponse.item))
+            }
+            else if(Commands.Update.canHandle(cmnd)){
+                return callback(createUpdateItemResponse(cmdResponse.error, cmdResponse.item))
+            }
+            else if(Commands.Done.canHandle(cmnd)){
+                return callback(createDoneItemResponse(cmdResponse.error, cmdResponse.item))
             }
             else{
                 if (reply) {
@@ -291,10 +265,44 @@ function createAboutResponse(version: string): any{
     }
 }
 
+import Error = require("./Modules/Error");
+function createAddItemResponse(error: number, item: Item): any{
+    let message = ""
+    if(error===0)
+        message = "Created :)"
+        /* Better show Attachment like in Today view */
+    else
+        message = Error.description[error]
+    
+    return { text: message }
+}
 
-function createTodayResponse(item: Item, errorMessage: string):any {
-    if(errorMessage){
-        return {text : errorMessage}
+function createUpdateItemResponse(error: number, item: Item): any{
+    let message = ""
+    if(error===0)
+        message = "Updated!!!"
+        /* Better show Attachment like in Today view */
+    else
+        message = Error.description[error]
+    
+    return { text: message }
+}
+
+function createDoneItemResponse(error: number, item: Item): any{
+    let message = ""
+    if(error===0)
+        message = "Awesome. Marked done :)"
+        /* Better show Attachment like in Today view */
+    else
+        message = Error.description[error]
+    
+    return { text: message }
+}
+
+
+function createTodayResponse(error: number, item: Item):any {
+    if(error !== 0){
+        return { text: Error.description[error] }
     }
     else if(item){
         let title = item.text
@@ -339,16 +347,3 @@ function dateFormatter(date:string):string {
     return dateFormat(now, "dddd, mmmm dS")
 }
 
-
-/**
- * TODO: Get Profile
- * https://graph.facebook.com/v2.6/<USER_ID>?fields=first_name,last_name,profile_pic,locale,timezone,gender&access_token=<PAGE_ACCESS_TOKEN>
- {
-   "first_name": "Lazim",
-   "last_name": "Mohammed",
-   "profile_pic": "https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpt1/v/t1.0-1/p200x200/10606488_916735125009225_5475037962770384238_n.jpg?oh=67d84aa123abf7273709cabe76b352e1&oe=57D9FF72&__gda__=1477010447_c8fc8182c65a0f011322e3a34aa3c6f9",
-   "locale": "en_IN",
-   "timezone": 5.5,
-   "gender": "male"
-}
- */

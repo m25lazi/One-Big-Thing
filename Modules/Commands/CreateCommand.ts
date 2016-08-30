@@ -1,6 +1,7 @@
 import Command = require("./Command");
 import Commands = require("./CommandFactory");
 import Item = require("../Models/Item");
+import Error = require("../Error");
 
 /**
  * CreateCommand
@@ -17,15 +18,10 @@ class CreateCommand extends Command {
     public handle (callback : Commands.CommandHandler){
         console.log("Handling /CREATE")
         if(!this.payload.message || this.payload.message.trim() === "")
-            return callback( {message : "You need to specify the item title. Eg: /Create Complete Part 1"} );
+            return callback({error: Error.Item.MissingTitle});
         
-        Item.add(this.payload.sender, this.payload.message.trim(), (success, item) => {
-            if(success){
-                callback( {message : "Created!!! :)"} );
-            }
-            else{
-                callback( {message : "Error : You have already created a task for today"} );
-            }
+        Item.add(this.payload.sender, this.payload.message.trim(), (error, item) => {
+            callback({error: error, item: item})
         })
         
     }
