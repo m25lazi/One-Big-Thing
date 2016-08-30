@@ -113,15 +113,7 @@ class ContextHandler{
             var command = new Commands.Update({ command: "/update", sender: user, message: context.info })
             command.handle((cmdResponse) => {
                 this.container[user] = null
-                const reply = cmdResponse.message
-                if (reply) {
-                    if (callback)
-                        callback({ text: reply })
-                    return
-                }
-                if (callback)
-                    callback(null)
-
+                callback(createUpdateItemResponse(cmdResponse.error))
             })
         }
         else if(txt==="N"){
@@ -168,15 +160,7 @@ class ContextHandler{
                 var command = new Commands.Update({ command : "/update", sender : user, message : context.info })
                 command.handle((cmdResponse) => {
                     this.container[user] = null
-                    const reply = cmdResponse.message
-                    if (reply) {
-                        if(callback)
-                            callback ({ text: reply })
-                        return 
-                    }
-                    if (callback)
-                        callback(null)
-
+                    callback(createUpdateItemResponse(cmdResponse.error))
                 })
 
             }
@@ -236,5 +220,20 @@ class Context{
     }
 
 }
+
+/* Todo: Remove this!!! This is a copy of createUpdateItemResponse from Index */
+
+import Error = require("./Error");
+function createUpdateItemResponse(error: number): any{
+    let message = ""
+    if(error===0)
+        message = "Updated!!!"
+        /* Better show Attachment like in Today view */
+    else
+        message = Error.description[error]
+    
+    return { text: message }
+}
+
 
 export = ContextHandler
