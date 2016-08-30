@@ -13,7 +13,7 @@ const Database = {
 
 
 const description:{[a: number]:string} = {
-    1000    :   "",
+    1000    :   "Not created yet! use /create command to create new item",
     1001    :   "You have already created a task for today.",
     1002    :   "",
     1003    :   "You need to specify the item title. Like /command title"
