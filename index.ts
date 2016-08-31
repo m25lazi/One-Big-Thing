@@ -136,7 +136,7 @@ app.post('/webhook/', function (req, res) {
                                         
                                     }) 
                                 }
-                                else if(jsonPayload.button === "update"){
+                                else if(jsonPayload.button === "update" || jsonPayload.button === "create"){
                                     ContextHandler.createFromPostback(sender, jsonPayload.button, "attachment.today", (response)=>{
                                         if (response)
                                             return sendMessage(sender, response)
@@ -302,6 +302,15 @@ function createDoneItemResponse(error: number, item: Item): any{
 
 function createTodayResponse(error: number, item: Item):any {
     if(error !== 0){
+        if(error === Error.Item.NotFound){
+            const title = "No task created for today."
+            const createPostbackPayload = {context:"today", button:"create", created:new Date()}
+            const create = new Messenger.PostbackButton("Create", JSON.stringify(createPostbackPayload))
+            let element:Messenger.PayloadElement = Messenger.Helper.PayloadElement(title, null, null, [create])
+            const payload = new Messenger.GenericPayload([element])
+            const attachment = new Messenger.TemplateAttachment(payload)
+            return { attachment: attachment }
+        }
         return { text: Error.description[error] }
     }
     else if(item){

@@ -27,6 +27,10 @@ class ContextHandler{
             contextType = ContextType.TaskUpdateTitle
             response = { text: "Title for the new task? (Eg: Complete PPT for demo)" }
         }
+        else if(command === "create"){
+            contextType = ContextType.TaskCreateTitle
+            response = { text: "Title for the new task? (Eg: Start learning Probability)" }
+        }
         
         if(contextType !== ContextType.Unknown){
             let context = new Context(contextType, Source.Postback, sourceDescription);
@@ -49,6 +53,10 @@ class ContextHandler{
                     
                     case ContextType.TaskUpdateConfirmation:
                         this.handleTaskUpdateConfirmation(user, context, text, callback);
+                        break;
+                    
+                    case ContextType.TaskCreateTitle:
+                        this.handleTaskCreateTitle(user, context, text, callback);
                         break;
 
                     default:
@@ -174,12 +182,22 @@ class ContextHandler{
         
     }
 
+    private static handleTaskCreateTitle(user:string, context:Context, text:string, callback:ContextCompletionHandler){
+        var command = new Commands.Create({ command: "/create", sender: user, message: text})
+        command.handle((cmdResponse) => {
+            this.container[user] = null
+            callback(createAddItemResponse(cmdResponse.error))
+        })
+        
+    }
+
 }
 
 enum ContextType {
     Unknown,
     TaskUpdateTitle,
-    TaskUpdateConfirmation
+    TaskUpdateConfirmation,
+    TaskCreateTitle
 }
 
 enum Source{
@@ -221,13 +239,24 @@ class Context{
 
 }
 
-/* Todo: Remove this!!! This is a copy of createUpdateItemResponse from Index */
+/* Todo: Remove this!!! This is a copy of createUpdateItemResponse, createAddItemResponse from Index */
 
 import Error = require("./Error");
 function createUpdateItemResponse(error: number): any{
     let message = ""
     if(error===0)
         message = "Updated!!!"
+        /* Better show Attachment like in Today view */
+    else
+        message = Error.description[error]
+    
+    return { text: message }
+}
+
+function createAddItemResponse(error: number): any{
+    let message = ""
+    if(error===0)
+        message = "Created :)"
         /* Better show Attachment like in Today view */
     else
         message = Error.description[error]
