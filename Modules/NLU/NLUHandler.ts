@@ -16,7 +16,7 @@ class NLUHandler {
                     var domain = result.action
                     var fulfillment = result.fulfillment
                     if(source === "domains"){
-                        if(domain === "smalltalk.greetings") {
+                        if(domain === "smalltalk.greetings" || domain === "smalltalk.appraisal") {
                             if(fulfillment && fulfillment.speech) {
                                 return callback(fulfillment.speech, null)
                             }

@@ -201,10 +201,10 @@ function handle(text:string, sender:string, callback:(reply:any)=>void) {
                 })
             }
             else if(command === "save"){
-                
+                return callback({ text: "Please use Create option from Today view! :)" })
             }
             else if(command === "update"){
-                
+                return callback({ text: "Please use Update option from Today view!" })
             }
             else if(command === "done"){
                 new Commands.Done({ command: "/done", sender: sender }).handle((commandResponse) => {
@@ -212,7 +212,7 @@ function handle(text:string, sender:string, callback:(reply:any)=>void) {
                 }) 
             }
             else if(command === "streak"){
-                
+                return callback({ text: "We are currently in maintenance mode!" })
             }
         }
         else{
