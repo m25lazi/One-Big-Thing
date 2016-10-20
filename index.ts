@@ -189,9 +189,9 @@ app.get('/health', (request, response)=>{
 })
 
 function handle(text:string, sender:string, callback:(reply:any)=>void) {
-    NLUHandler.textRequest("Hey", (reply, command) => {
+    NLUHandler.textRequest(text, (reply, command) => {
         if(reply){
-
+            return callback({ text: "We are currently in maintenance mode!" })
         }
         else if(command){
             if(command === "get"){

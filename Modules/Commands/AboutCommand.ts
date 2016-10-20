@@ -15,7 +15,7 @@ class AboutCommand extends Command {
     
     public handle (callback : Commands.CommandHandler){
         console.log("Handling /ABOUT")
-        callback({success: true, message : "v16.10.1"})
+        callback({success: true, message : "v16.10.2"})
     }
 }
 
