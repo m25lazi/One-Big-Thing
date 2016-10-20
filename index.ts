@@ -16,6 +16,7 @@ app.use(bodyParser.json());
 let api_token = process.env.MESSENGER_API_TOKEN
 let token = process.env.MESSENGER_PAGE_ACCESS_TOKEN;
 //Set process.env.FIREBASE_URL also
+//Set process.env.APIAI_CLIENT_TOKEN also
 
 /* Custom Modules */
 import Commands = require("./Modules/Commands/CommandFactory")
@@ -191,7 +192,7 @@ app.get('/health', (request, response)=>{
 function handle(text:string, sender:string, callback:(reply:any)=>void) {
     NLUHandler.textRequest(text, (reply, command) => {
         if(reply){
-            return callback({ text: "We are currently in maintenance mode!" })
+            return callback({ text: reply })
         }
         else if(command){
             if(command === "get"){
