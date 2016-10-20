@@ -24,7 +24,7 @@ import User = require("./Modules/Models/User")
 import Onboarding = require("./Modules/Onboarding")
 import ContextHandler = require("./Modules/ContextHandler")
 import Messenger = require("./Modules/Models/Messenger")
-
+import NLUHandler = require("./Modules/NLU/NLUHandler")
 
 /* Start app */
 var port = parseInt(process.env.PORT, 10) || 8080;
@@ -189,6 +189,38 @@ app.get('/health', (request, response)=>{
 })
 
 function handle(text:string, sender:string, callback:(reply:any)=>void) {
+    NLUHandler.textRequest("Hey", (reply, command) => {
+        if(reply){
+
+        }
+        else if(command){
+            if(command === "get"){
+                new Commands.Today({ command: "/today", sender: sender }).handle((commandResponse) => {
+                    callback(createTodayResponse(commandResponse.error, commandResponse.item))
+                })
+            }
+            else if(command === "save"){
+                
+            }
+            else if(command === "update"){
+                
+            }
+            else if(command === "done"){
+                new Commands.Done({ command: "/done", sender: sender }).handle((commandResponse) => {
+                    return callback(createDoneItemResponse(commandResponse.error, commandResponse.item))
+                }) 
+            }
+            else if(command === "streak"){
+                
+            }
+        }
+        else{
+            return callback({ text: "We are currently in maintenance mode!" })
+        }
+    })
+}
+
+function handleOld(text:string, sender:string, callback:(reply:any)=>void) {
     if(text.trim().charAt(0) === '/'){
         console.log("Commaaaaand!!!!")
         var cmnd = text.trim().split(" ")[0]
