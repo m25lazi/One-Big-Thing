@@ -201,10 +201,22 @@ function handle(text:string, sender:string, callback:(reply:any)=>void) {
                 })
             }
             else if(command === "save"){
+                ContextHandler.createFromPostback(sender, "create", "nlu", (response) => {
+                    if (response)
+                        return sendMessage(sender, response)
+
+                    return sendMessage(sender, { text: "FATAL ERROR" })
+                })
                 return callback({ text: "Please use Create option from Today view! :)" })
             }
             else if(command === "update"){
-                return callback({ text: "Please use Update option from Today view!" })
+                ContextHandler.createFromPostback(sender, "update", "nlu", (response) => {
+                    if (response)
+                        return sendMessage(sender, response)
+
+                    return sendMessage(sender, { text: "FATAL ERROR" })
+                })
+                return callback({ text: "Please use Create option from Today view! :)" })
             }
             else if(command === "done"){
                 new Commands.Done({ command: "/done", sender: sender }).handle((commandResponse) => {
