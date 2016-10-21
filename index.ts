@@ -222,11 +222,11 @@ function handle(text:string, sender:string, callback:(reply:any)=>void) {
                 }) 
             }
             else if(command === "streak"){
-                return callback({ text: "We are currently in maintenance mode!" })
+                return callback({ text: "Sorry! I didn't get that" })
             }
         }
         else{
-            return callback({ text: "We are currently in maintenance mode!" })
+            return callback({ text: "Sorry! I didn't get that" })
         }
     })
 }
