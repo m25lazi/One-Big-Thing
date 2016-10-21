@@ -207,7 +207,6 @@ function handle(text:string, sender:string, callback:(reply:any)=>void) {
 
                     return sendMessage(sender, { text: "FATAL ERROR" })
                 })
-                return callback({ text: "Please use Create option from Today view! :)" })
             }
             else if(command === "update"){
                 ContextHandler.createFromPostback(sender, "update", "nlu", (response) => {
@@ -216,7 +215,6 @@ function handle(text:string, sender:string, callback:(reply:any)=>void) {
 
                     return sendMessage(sender, { text: "FATAL ERROR" })
                 })
-                return callback({ text: "Please use Create option from Today view! :)" })
             }
             else if(command === "done"){
                 new Commands.Done({ command: "/done", sender: sender }).handle((commandResponse) => {
