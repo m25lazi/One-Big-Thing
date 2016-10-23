@@ -15,7 +15,7 @@ class Onboarding{
         let yesQR = Messenger.Helper.CreateQuickReply("Yea!", "ONBOARDING_START_TUTORIALS")
         let noQR = Messenger.Helper.CreateQuickReply("Nah, later", "ONBOARDING_IGNORE_TUTORIALS")
 
-        let message = "Hi " + user + "! Happy to see you here :)\nI am another task manager for you. But, what makes me different is that I will let you concentrate on a single BIG task everyday. Continue looking how to use me?";
+        let message = "Hi " + user + "! Happy to see you here :)\nI am yet another task manager for you. But, what makes me different is that I will let you concentrate on a single BIG task everyday. Continue looking how to use me?";
         return Messenger.Helper.CreateResponse(message, [yesQR, noQR]);
     }
 
@@ -72,7 +72,7 @@ class Onboarding{
         this.container[psid] = null
 
         let okQR = Messenger.Helper.CreateQuickReply("OK", "ONBOARDING_STOP")
-        let message = "Fine :) One note - You can invoke me using commands. Type /help anytime to get list of commands.";
+        let message = "Fine :) One note - I am not you fully loaded personal assistant, whom you can ask 'Who is the President of USA?', but for task handling only";
         return Messenger.Helper.CreateResponse(message, [okQR]);
     }
 
@@ -84,11 +84,9 @@ class Onboarding{
     }
 
     private static handleStartTutorials(psid: string): Messenger.Response{
-        let context: OnboardingContext = this.container[psid]
-        context.nextStep = NextStep.CreateTask;
-        this.container[psid] = context;
+        this.container[psid] = null;
         
-        let message = "Let's get started. Everyday, you can create a task, that one important task for the day. Use /create command for this. Example : '/create Complete watching Android animations basic course videos'. Give it a try";
+        let message = "Let's get started. Everyday, you can create a task, that one important task for the day. I am powered by machine learning and you can ask me to create, update or mark your tasks done. Go ahead!";
         return Messenger.Helper.CreateResponse(message, null);
     }
 
