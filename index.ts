@@ -180,7 +180,6 @@ app.post('/webhook/', function (req, res) {
 });
 
 
-
 app.get('/health', (request, response)=>{
     let gmtDate = Math.round(new Date().getTime())
     let istDate = gmtDate + ((5*60+30)*60*1000)
@@ -188,6 +187,16 @@ app.get('/health', (request, response)=>{
     let date = new Date (istDate)
     response.end("Typescript Express Server : "+new Date().toString())
 })
+
+import Reminder = require("./Modules/Reminder")
+app.get('/remind', (request, response)=>{
+    new Reminder().handle()
+    response.end()
+})
+
+
+
+
 
 function handle(text:string, sender:string, callback:(reply:any)=>void) {
     NLUHandler.textRequest(text, (reply, command) => {
