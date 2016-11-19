@@ -22,9 +22,9 @@ class Reminder {
     public handle(){
         
         /* Get all Users who have not enabled DnD, hardcoded <remindableUsers> as of now */
-
+        var reminder = this
         Reminder.remindableUsers.forEach(function(user){
-            this.assignedTaskPresentFor(user, (present: Boolean)=>{
+            reminder.assignedTaskPresentFor(user, (present: Boolean)=>{
                 if(present){
                     console.log("Task already present for user: "+user)
                 }
