@@ -4,7 +4,7 @@ import Messenger = require("./Models/Messenger")
 class Reminder {
 
     /* Currently hardcoded to my personal test ID */
-    static remindableUsers = [process.env.TEST_ACCOUNT]
+    static remindableUsers = [String(process.env.TEST_ACCOUNT)]
 
     constructor() { }
 
@@ -29,6 +29,7 @@ class Reminder {
                     console.log("Task already present for user: "+user)
                 }
                 else{
+                    console.log("Send Reminder")
                     Messenger.Helper.send(user, "Good morning, Lazim! Would you like to create today's task?")
                 }
             })
