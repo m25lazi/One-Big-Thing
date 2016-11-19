@@ -7,7 +7,7 @@ import Error = require("../Error");
  * UpdateCommand
  * Handles /Update xxxxxxxx
  */
-class CreateCommand extends Command {
+class UpdateCommand extends Command {
     
     static command = "/UPDATE"
     
@@ -27,4 +27,4 @@ class CreateCommand extends Command {
     }
 }
 
-export = CreateCommand
+export = UpdateCommand

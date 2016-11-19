@@ -6,7 +6,7 @@ import Item = require("../Models/Item");
  * TodayCommand
  * Handles /Today
  */
-class CreateCommand extends Command {
+class TodayCommand extends Command {
     
     static command = "/TODAY"
     
@@ -24,4 +24,4 @@ class CreateCommand extends Command {
     }
 }
 
-export = CreateCommand
+export = TodayCommand
