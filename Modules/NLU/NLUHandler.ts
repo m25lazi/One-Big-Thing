@@ -1,11 +1,12 @@
 var apiai = require('apiai');
+const randomSessionId = "025d8b19-c904-4c4e-bb67-3538f6e9cbe6"
 let clientToken = process.env.APIAI_CLIENT_TOKEN
 let nluApp = apiai(clientToken);
 
 class NLUHandler {
     static textRequest(message: string, callback: (reply: string, action: string) => void ) {
         console.log("Sending request")
-        var request = nluApp.textRequest(message);
+        var request = nluApp.textRequest(message, {sessionId: randomSessionId});
 
         request.on('response', function (response: any) {
             console.log(response);
@@ -42,7 +43,14 @@ class NLUHandler {
                 }
             }
             return callback(null, null)
-        });
+        },
+            function (error: any, response: any, body: any) {
+                if (error) {
+                    return console.error('Server error : ', error);
+                    //TODO:Error Handling???
+                }
+                console.log('API.AI Response: ', body);
+            });
 
         request.on('error', function (error: any) {
             console.log(error);
