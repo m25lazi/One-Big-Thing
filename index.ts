@@ -151,6 +151,9 @@ app.post('/webhook/', function (req, res) {
                                     return
                                 }
                             }
+                            else if(jsonPayload.context === "reminder"){
+                                Reminder.handlePostback(sender, jsonPayload)
+                            }
                             else if (jsonPayload.context === "persistent-menu") {
                                 if (jsonPayload.button === "about") {
                                     new Commands.About(null).handle((commandResponse) => {

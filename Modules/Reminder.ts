@@ -1,5 +1,6 @@
 import Commands = require("./Commands/CommandFactory")
 import Messenger = require("./Models/Messenger")
+import Context = require("./ContextHandler")
 
 class Reminder {
 
@@ -30,11 +31,40 @@ class Reminder {
                 }
                 else{
                     console.log("Send Reminder")
-                    Messenger.Helper.send(user, "Good morning, Lazim! Would you like to create today's task?")
+
+                    const title = "Good morning! Would you like to create today's task?"
+
+                    const createPostbackPayload = { context: "reminder", button: "create", created: new Date() }
+                    const createButton = new Messenger.PostbackButton("Create", JSON.stringify(createPostbackPayload))
+
+                    const laterPostbackPayload = { context: "reminder", button: "later", created: new Date() }
+                    const laterButton = new Messenger.PostbackButton("May be later!", JSON.stringify(createPostbackPayload))
+
+                    let element: Messenger.PayloadElement = Messenger.Helper.PayloadElement(title, null, null, [createButton, laterButton])
+                    const payload = new Messenger.GenericPayload([element])
+                    const attachment = new Messenger.TemplateAttachment(payload)
+
+                    Messenger.Helper.send(user, { attachment: attachment })
                 }
             })
         })
 
+    }
+
+    public static handlePostback(sender: string, payload: any){
+        if (payload.button === "create") {
+            Context.createFromPostback(sender, payload.button, "reminder.create", (response) => {
+                if (response)
+                    return Messenger.Helper.send(sender, response)
+
+                Messenger.Helper.send(sender, Messenger.Helper.CreateResponse("FATAL ERROR 1", null))
+            })
+
+        }
+        else if (payload.button === "later") {
+            //Nothing to do! Just send an acknowledgement
+            Messenger.Helper.send(sender, Messenger.Helper.CreateResponse("Cool ^_^", null))
+        }
     }
 
 

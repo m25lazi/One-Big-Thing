@@ -130,7 +130,14 @@ export class Helper{
                 recipient: { id: recipient },
                 message: message,
             }
-        });//TODO:Error Handling???
+        },
+            function (error: any, response: any, body: any) {
+                if (error) {
+                    return console.error('upload failed:', error);
+                    //TODO:Error Handling???
+                }
+                console.log('Upload successful!  Server responded with:', body);
+            });
     }
 
     static PayloadElement(title: string, image_url: string, subtitle: string, buttons: Array<Button>): PayloadElement{
