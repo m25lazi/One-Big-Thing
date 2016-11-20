@@ -38,7 +38,7 @@ class Reminder {
                     const createButton = new Messenger.PostbackButton("Create", JSON.stringify(createPostbackPayload))
 
                     const laterPostbackPayload = { context: "reminder", button: "later", created: new Date() }
-                    const laterButton = new Messenger.PostbackButton("May be later!", JSON.stringify(createPostbackPayload))
+                    const laterButton = new Messenger.PostbackButton("May be later!", JSON.stringify(laterPostbackPayload))
 
                     let element: Messenger.PayloadElement = Messenger.Helper.PayloadElement(title, null, null, [createButton, laterButton])
                     const payload = new Messenger.GenericPayload([element])
