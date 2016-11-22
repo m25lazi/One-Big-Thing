@@ -5,7 +5,7 @@ import Context = require("./ContextHandler")
 class Reminder {
 
     /* Currently hardcoded to my personal test ID */
-    static remindableUsers = [String(process.env.TEST_ACCOUNT)]
+    static remindableUsersList = String(process.env.TEST_ACCOUNT)
 
     constructor() { }
 
@@ -24,13 +24,14 @@ class Reminder {
         
         /* Get all Users who have not enabled DnD, hardcoded <remindableUsers> as of now */
         var reminder = this
-        Reminder.remindableUsers.forEach(function(user){
+        let remindableUsers = Reminder.remindableUsersList.split(",")
+        remindableUsers.forEach(function(user){
             reminder.assignedTaskPresentFor(user, (present: Boolean)=>{
                 if(present){
                     console.log("Task already present for user: "+user)
                 }
                 else{
-                    console.log("Send Reminder")
+                    console.log("Send Reminder for: "+user)
 
                     const title = "Good morning! Would you like to create today's task?"
 
