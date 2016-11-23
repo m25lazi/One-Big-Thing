@@ -1,7 +1,7 @@
 var apiai = require('apiai');
+var Config = require('../../Config/Config')
 const randomSessionId = "025d8b19-c904-4c4e-bb67-3538f6e9cbe6"
-let clientToken = process.env.APIAI_CLIENT_TOKEN
-let nluApp = apiai(clientToken);
+let nluApp = apiai(Config.ApiaiClientToken);
 
 class NLUHandler {
     static textRequest(message: string, callback: (reply: string, action: string) => void ) {

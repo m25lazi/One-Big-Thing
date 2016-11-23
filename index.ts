@@ -13,10 +13,6 @@ var app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-let api_token = process.env.MESSENGER_API_TOKEN
-let token = process.env.MESSENGER_PAGE_ACCESS_TOKEN;
-//Set process.env.FIREBASE_URL also
-//Set process.env.APIAI_CLIENT_TOKEN also
 
 /* Custom Modules */
 import Commands = require("./Modules/Commands/CommandFactory")
@@ -26,6 +22,8 @@ import Onboarding = require("./Modules/Onboarding")
 import ContextHandler = require("./Modules/ContextHandler")
 import Messenger = require("./Modules/Models/Messenger")
 import NLUHandler = require("./Modules/NLU/NLUHandler")
+
+import Config = require("./Config/Config")
 
 /* Start app */
 var port = parseInt(process.env.PORT, 10) || 8080;
@@ -37,7 +35,7 @@ app.listen(port, ()=>{
 app.get('/webhook/', (req, res) => {
     console.log('GET /webhook');
     console.log(req)
-    if (req.query['hub.verify_token'] === api_token) {
+    if (req.query['hub.verify_token'] === Config.MessengerApiKey) {
         res.send(req.query['hub.challenge']);
     }
     res.send('Error, wrong validation token');
@@ -287,15 +285,7 @@ function handleOld(text:string, sender:string, callback:(reply:any)=>void) {
 }
 
 function sendMessage(recipient: string, messageData: any) {
-    request({
-        url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: { access_token: token },
-        method: 'POST',
-        json: {
-            recipient: { id: recipient },
-            message: messageData,
-        }
-    });//TODO:Error Handling???
+    Messenger.Helper.send(recipient, messageData)
 }
 
 function createAboutResponse(version: string): any{

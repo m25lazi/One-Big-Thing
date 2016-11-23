@@ -1,4 +1,5 @@
 import Firebase = require("firebase");
+import Config = require("../../Config/Config")
 
 interface DatabaseHandler {
     (data : any, error : any) : void
@@ -36,7 +37,7 @@ class Database {
     }
     
     static sharedDatabase () {
-        var firebaseURL : string = process.env.FIREBASE_URL
+        var firebaseURL : string = Config.FirebaseBaseURL
         if(!firebaseURL || firebaseURL.trim() === "")
             throw "SET FIREBASE URL"
         return  new Database(new Firebase(firebaseURL));

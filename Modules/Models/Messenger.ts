@@ -1,4 +1,5 @@
 var request = require('request'); //TODO: JS??? Port to TypeScript!!!
+var Config = require('../../Config/Config')
 
 /**
  * Interface for Messenger Response.
@@ -121,7 +122,7 @@ export class Helper{
         console.log("sending");
         console.log(message);
         
-        let token = process.env.MESSENGER_PAGE_ACCESS_TOKEN;
+        let token = Config.MessengerPageAccessToken;
         request({
             url: 'https://graph.facebook.com/v2.6/me/messages',
             qs: { access_token: token },

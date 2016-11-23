@@ -1,5 +1,6 @@
 import Request = require("../Request/Request")
 import Database = require("../Database/Database")
+import Config = require("../../Config/Config")
 
 enum Provider {
     Unknown,
@@ -150,7 +151,7 @@ export = class User {
     private static saveUsingGraphAPI (id : string, callback : (success : boolean, user : User) => void){
         Request.get("https://graph.facebook.com/v2.6/"+id, {
         fields : "first_name,last_name,profile_pic,locale,timezone,gender",
-        access_token : process.env.MESSENGER_PAGE_ACCESS_TOKEN
+        access_token : Config.MessengerPageAccessToken
     }, (error, response, body)=>{
         if(error){
             console.log("Error fetching User - "+JSON.stringify(error));
